@@ -1,0 +1,38 @@
+<?xml version="1.0" ?>
+<odoo>
+
+    <record id="import_sale_order_form" model="ir.ui.view">
+        <field name="name">Upload Bank Statements</field>
+        <field name="model">import.sale.order</field>
+        <field name="priority">1</field>
+        <field name="arch" type="xml">
+            <form string="Upload Bank Statements">
+                <h2>You can upload your orders using:</h2>
+                <ul id="statement_format">
+
+                </ul>
+                <field name="attachment_ids" widget="many2many_binary" colspan="2" string="Select Excel" nolabel="1"/>
+                <footer>
+                    <button name="import_file" string="Try Import" type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_import_sale_order_form" model="ir.actions.act_window">
+        <field name="name">Tạo đơn từ PAKD</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">import.sale.order</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="view_id" ref="import_sale_order_form"/>
+    </record>
+
+    <menuitem id="menu_action_import_sale_order_form"
+              action="action_import_sale_order_form"
+              groups="sales_team.group_sale_salesman"
+              parent="sale.sale_order_menu"
+              sequence="50"/>
+
+</odoo>

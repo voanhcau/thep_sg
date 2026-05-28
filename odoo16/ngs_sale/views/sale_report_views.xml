@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <!-- Thừa kế search view của sale.report để thêm filter và group by cho Loại KH -->
+    <record id="view_order_product_search_inherit" model="ir.ui.view">
+        <field name="name">sale.report.search.inherit</field>
+        <field name="model">sale.report</field>
+        <field name="inherit_id" ref="sale.view_order_product_search"/>
+        <field name="arch" type="xml">
+            <!-- Thêm fields vào search -->
+            <xpath expr="//field[@name='industry_id']" position="after">
+                <field name="type_id"/>
+                <field name="type_partner_id"/>
+            </xpath>
+            
+            <!-- Thêm filter vào Extended Filters - dùng field company_id làm reference -->
+            <xpath expr="//group[@expand='0']//field[@name='company_id']" position="after">
+                <field name="type_id"/>
+                <field name="type_partner_id"/>
+            </xpath>
+            
+            <!-- Thêm group by cho Loại KH -->
+            <xpath expr="//filter[@name='industry_id']" position="after">
+                <filter string="Loại KH (SO)" name="type_id" context="{'group_by':'type_id'}"/>
+                <filter string="Loại KH (KH)" name="type_partner_id" context="{'group_by':'type_partner_id'}"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <record id="view_partner_form" model="ir.ui.view">
+        <field name="name">res.partner.form</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='category_id']" position="after">
+                <field name="type_id" groups="sales_team.group_sale_manager"/>
+            </xpath>
+            <!-- Thêm page "Thông tin hợp đồng" vào notebook -->
+            <!-- Ưu tiên: nếu đã có notebook, thêm page vào -->
+            <xpath expr="//notebook" position="inside">
+                <page string="Thông tin hợp đồng" name="contract_info">
+                    <group>
+                        <group string="Thông tin hợp đồng">
+                            <field name="contract_number"/>
+                            <field name="contract_from_date"/>
+                            <field name="contract_to_date"/>
+                        </group>
+                        <group string="Người đại diện">
+                            <field name="contract_representative"/>
+                            <field name="contract_position"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+            <!-- Nếu chưa có notebook, tạo notebook mới sau sheet (chatter thường ở cuối) -->
+            <!-- <xpath expr="//div[@class='oe_chatter']" position="before">
+                <notebook>
+                    <page string="Thông tin hợp đồng" name="contract_info">
+                        <group>
+                            <group string="Thông tin hợp đồng">
+                                <field name="contract_number"/>
+                                <field name="contract_from_date"/>
+                                <field name="contract_to_date"/>
+                            </group>
+                            <group string="Người đại diện">
+                                <field name="contract_representative"/>
+                                <field name="contract_position"/>
+                            </group>
+                        </group>
+                    </page>
+                </notebook>
+            </xpath> -->
+        </field>
+    </record>
+
+    <record id="view_partner_tree" model="ir.ui.view">
+        <field name="name">res.partner.tree</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='user_id']" position="after">
+                <field name="property_payment_term_id" string="Các điều khoản thanh toán? (bán)"/>
+                <field name="property_supplier_payment_term_id" string="Các điều khoản thanh toán? (mua)"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="ngs_partner_view_buttons" model="ir.ui.view">
+        <field name="name">partner.view.buttons.ngs</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="account_reports.partner_view_buttons"/>
+        <field name="arch" type="xml">
+            <xpath expr="//button" position="attributes">
+                <attribute name="string">Sổ chi tiết công nợ</attribute>
+                <attribute name="title">Sổ chi tiết công nợ</attribute>
+            </xpath>
+            <xpath expr="//button[@name='open_partner_ledger']" position="after">
+                <button type="object"
+                    groups="account.group_account_invoice"
+                    class="oe_stat_button"
+                    id="partner_reconciliation_button"
+                    icon="fa-file-text-o"
+                    name="open_partner_reconciliation"
+                    string="Xuất ĐCCN"
+                    title="Xuất đối chiếu công nợ"
+                    context="{'default_partner_id': active_id}">
+                </button>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

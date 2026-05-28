@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <!-- Override external_layout_standard để ẩn footer nếu company.hide_report_footer = True -->
+    <template id="external_layout_standard" inherit_id="web.external_layout_standard">
+        <xpath expr="//div[contains(@t-attf-class, 'o_standard_footer')]" position="attributes">
+            <attribute name="t-if">not company.hide_report_footer</attribute>
+        </xpath>
+    </template>
+
+    <!-- Override external_layout_striped để ẩn footer -->
+    <template id="external_layout_striped" inherit_id="web.external_layout_striped">
+        <xpath expr="//div[contains(@t-attf-class, 'o_background_footer')]" position="attributes">
+            <attribute name="t-if">not company.hide_report_footer</attribute>
+        </xpath>
+    </template>
+
+    <!-- Override external_layout_boxed để ẩn footer -->
+    <template id="external_layout_boxed" inherit_id="web.external_layout_boxed">
+        <xpath expr="//div[contains(@t-attf-class, 'o_boxed_footer')]" position="attributes">
+            <attribute name="t-if">not company.hide_report_footer</attribute>
+        </xpath>
+    </template>
+
+    <!-- Override external_layout_bold để ẩn footer -->
+    <template id="external_layout_bold" inherit_id="web.external_layout_bold">
+        <xpath expr="//div[contains(@t-attf-class, 'o_clean_footer')]" position="attributes">
+            <attribute name="t-if">not company.hide_report_footer</attribute>
+        </xpath>
+    </template>
+
+</odoo>

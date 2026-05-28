@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="report_purchasequotation_document" inherit_id="purchase.report_purchasequotation_document" priority="50">
+        <xpath expr="//t[@t-set='address']" position="before">
+            <br/>
+            <div style="text-align: center">
+                <h4>ĐƠN ĐẶT HÀNG SỐ #<span t-field="o.name"/></h4>
+            </div>
+            <br/>
+            <div class="mt-4">
+                <span>Kính gửi:</span>
+                <span t-field="o.partner_id"
+                     t-options='{"widget": "contact", "fields": ["address", "name"], "no_marker": True}'/>
+                <p t-if="o.partner_id.vat"><t t-out="o.company_id.account_fiscal_country_id.vat_label or 'Tax ID'"/>
+                    :
+                    <span t-field="o.partner_id.vat"/>
+                </p>
+            </div>
+        </xpath>
+        <xpath expr="//t[@t-set='address']" position="replace"/>
+        <xpath expr="//h2[hasclass('mt-4')]" position="replace"/>
+        <xpath expr="//div[@id='informations']" position="replace">
+            <div class="row mt-4 mb-4" id="informations">
+                <div t-if="o.user_id" class="col-auto col-4 mw-100 mb-2" name="user_id">
+                    <strong>Nhân viên KD:</strong>
+                    <p class="m-0" t-field="o.user_id"/>
+                </div>
+                <div t-if="o.date_approve" class="col-auto col-4 mw-100 mb-2" name="date_planned">
+                    <strong>Ngày xác nhận:</strong>
+                    <p class="m-0" t-field="o.date_approve"/>
+                </div>
+            </div>
+        </xpath>
+        <xpath expr="//thead" position="replace">
+            <thead style="display: table-row-group">
+                <tr>
+                    <th name="th_description" class="text-start">Sản phẩm</th>
+                    <th name="th_quantity text-end" class="text-end">QC</th>
+                    <th name="th_quantity text-end" class="text-end">L(m)</th>
+                    <th name="th_quantity text-end" class="text-end">SL</th>
+                    <th name="th_quantity text-end" class="text-end">Số cây/bó</th>
+                    <th name="th_quantity text-end" class="text-end">SL bó</th>
+                    <th name="th_quantity text-end" class="text-end">SL cây lẻ bó</th>
+                    <th name="th_quantity text-end" class="text-end">KL (kg)</th>
+                </tr>
+            </thead>
+            <t t-set="current_subtotal" t-value="0"/>
+        </xpath>
+        <xpath expr="//t[@t-foreach='o.order_line']" position="replace">
+            <t t-set="total_quantity_another1" t-value="0"/>
+            <t t-set="total_quantity_another3" t-value="0"/>
+            <t t-set="total_product_uom_qty" t-value="0"/>
+            <t t-set="total_quantity_reddem" t-value="0"/>
+            <t t-foreach="o.order_line" t-as="line">
+                <t t-set="current_subtotal" t-value="current_subtotal + line.price_subtotal" groups="account.group_show_line_subtotals_tax_excluded"/>
+                <t t-set="current_subtotal" t-value="current_subtotal + line.price_total" groups="account.group_show_line_subtotals_tax_included"/>
+
+                <tr>
+                    <td style="line-height: 10px !important;padding: 0px !important; padding-top: 0px !important" name="td_name" class="text-start">
+                        <t t-if="line.product_id">
+                            <span t-field="line.product_id.name"/>
+                        </t>
+                        <t t-else="">
+                            <span t-field="line.name"/>
+                        </t>
+                    </td>
+                    <td style="line-height: 10px !important;padding: 0px !important; padding-top: 0px !important" class="text-end">
+                        <t t-if="line.supplier_delivery_type_id">
+                            <span t-field="line.supplier_delivery_type_id.name"/> <!-- QC-->
+                        </t>
+                    </td>
+                    <td style="line-height: 10px !important;padding: 0px !important; padding-top: 0px !important" class="text-end">
+                        <span t-field="line.length"/> <!-- L (m)-->
+                    </td>
+                    <td style="line-height: 10px !important;padding: 0px !important; padding-top: 0px !important" class="text-end">
+                        <span t-esc="int(line.quantity_another1)"/><!-- SL -->
+                    </td>
+                    <td style="line-height: 10px !important;padding: 0px !important; padding-top: 0px !important" class="text-end">
+                        <span t-esc="int(line.quantity_another2)"/>
+                        <!-- Số cây/bó: "Số cây/bó" sang số nguyên (không có số lẻ thập phân) -->
+                    </td>
+                    <td style="line-height: 10px !important;padding: 0px !important; padding-top: 0px !important" class="text-end">
+                        <!-- 
+                        SL bó :
+                            "SL bó" thành số nguyên (chia lấy phần nguyên, không lấy phần dư). 
+                            Vd. SL = 500 cây; "Số cây / bó" = 120 
+                            => "SL bó" = phần nguyên của (500/120) = 4 (kết quả 4.17 thì lấy phần nguyên là 4)
+                        -->
+                        <t t-set="quantity_redeem" t-value="0"/>
+                        <t t-if="line.quantity_another2 != 0">
+                            <span t-esc="int(line.quantity_another1 / line.quantity_another2)"/>
+                            <t t-set="quantity_redeem" t-value="int(line.quantity_another1 / line.quantity_another2)"/>
+                        </t>
+                        <t t-else="">
+                            <span t-esc="0"/><!-- SL bó -->
+                        </t>
+                    </td>
+                    <td style="line-height: 10px !important;padding: 0px !important; padding-top: 0px !important" class="text-end">
+                        <!-- 
+                        SL cây lẻ bó:
+                            "Số cây lẻ bó" bằng số lẻ của phép chia phía trên
+                             = phần dư của (500/120) = 20 (cây)
+                         -->
+                        <t t-if="line.quantity_another1 >= line.quantity_another2">
+                            <span t-esc="int(line.quantity_another1 % line.quantity_another2)"/>
+                            <t t-set="total_quantity_reddem" t-value="int(total_quantity_reddem + (line.quantity_another1 % line.quantity_another2))"/>
+                        </t>
+                        <t t-else="">
+                            <span t-esc="int(line.quantity_another1)"/>
+                            <t t-set="total_quantity_reddem" t-value="int(total_quantity_reddem + line.quantity_another1)"/>
+                        </t>
+                    </td>
+                    <td style="line-height: 10px !important;padding: 0px !important; padding-top: 0px !important" name="td_quantity" class="text-end">
+                        <span t-field="line.product_uom_qty"/><!-- KL (kg)) -->
+                    </td>
+                    <t t-set="total_quantity_another1" t-value="total_quantity_another1 + int(line.quantity_another1 / line.quantity_another2)"/>
+                    <t t-set="total_quantity_another3" t-value="total_quantity_another3 + line.quantity_another3"/>
+                    <t t-set="total_product_uom_qty" t-value="float(total_product_uom_qty + line.product_uom_qty)"/>
+                </tr>
+            </t>
+            <tr>
+                <td style="line-height: 10px !important;padding: 0px !important; padding-top: 0px !important" name="td_name" class="text-start"><strong>Tổng cộng:</strong></td>
+                <td style="line-height: 10px !important;padding: 0px !important; padding-top: 0px !important" name="td_name" class="text-end"></td>
+                <td style="line-height: 10px !important;padding: 0px !important; padding-top: 0px !important" name="td_name" class="text-end"></td>
+                <td style="line-height: 10px !important;padding: 0px !important; padding-top: 0px !important" name="td_name" class="text-end"></td>
+                <td style="line-height: 10px !important;padding: 0px !important; padding-top: 0px !important" name="td_name" class="text-end"></td>
+                <td style="line-height: 10px !important;padding: 0px !important; padding-top: 0px !important" name="td_quantity" class="text-end"><span t-esc="total_quantity_another1"/></td>
+                <td style="line-height: 10px !important;padding: 0px !important; padding-top: 0px !important" name="td_name" class="text-end"><span t-esc="total_quantity_reddem"/></td>
+                <td style="line-height: 10px !important;padding: 0px !important; padding-top: 0px !important" name="td_quantity" class="text-end">
+                    <span t-esc="'{0:,.1f}'.format(float(total_product_uom_qty))"/>
+                </td>
+            </tr>
+        </xpath>
+        <xpath expr="//p[hasclass('mt-4')]" position="after">
+            <div class="row mt-4 mb-4">
+                <div class="col-auto col-6 mw-100 mb-2">
+                    <p>
+                        <strong>
+                            <span t-field="o.purchase_description"/>
+                        </strong>
+                    </p>
+                </div>
+                <div class="col-auto col-6 mw-100 mb-2" style="text-align: right">
+                    <strong>CÔNG TY TNHH XNK NAM SÀI GÒN</strong>
+                    <t t-if="o and o.company_id and o.company_id.signature and o.company_id.signature_po">
+                        <br/>
+                        <img t-att-src="image_data_uri(o.company_id.signature)" style="max-height: 5cm; max-width: 18cm; float: right; "/>
+                    </t>
+                </div>
+            </div>
+
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+        </xpath>
+    </template>
+
+</odoo>

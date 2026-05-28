@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <record id="ngs_sale_product_pricelist_view" model="ir.ui.view">
+        <field name="name">product.pricelist.ngs_sale.form</field>
+        <field name="inherit_id" ref="product.product_pricelist_view"/>
+        <field name="model">product.pricelist</field>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='pricelist_discounts']" position="after">
+                <group name="pricelist_type" string="Loại bảng giá">
+                    <field name="type" widget="radio"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="product_pricelist_item_form_view" model="ir.ui.view">
+        <field name="name">product.pricelist.item.form</field>
+        <field name="inherit_id" ref="product.product_pricelist_item_form_view"/>
+        <field name="model">product.pricelist.item</field>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='price_surcharge']" position="after">
+                <field name="discount_value" groups="product.group_sale_pricelist" attrs="{'invisible': [('compute_price', '!=', 'formula')]}"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

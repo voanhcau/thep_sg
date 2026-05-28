@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <record id="purchase_report_tool_form_view" model="ir.ui.view">
+        <field name="name">purchase.report.tool.form</field>
+        <field name="model">purchase.report.tool</field>
+        <field name="arch" type="xml">
+            <form class="oe_form_configuration">
+                <header>
+                    <button string="Trích xuất dữ liệu" name="action_building_report" type="object"/>
+                    <button string="Xuất File" name="action_preview_purchase_line" type="object"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name" string="Tên"/>
+                        <h1>
+                            <field name="name" placeholder="e.g. Sản lượng mua hàng theo NCC tháng 12"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="Ngày nhận hàng">
+                            <field name="from_dt"/>
+                            <field name="to_dt"/>
+                        </group>
+                        <group string="Ngày hóa đơn">
+                            <field name="invoice_date_from"/>
+                            <field name="invoice_date_to"/>
+                        </group>
+                        <group>
+                            <field name="partner_ids" widget="many2many_tags"/>
+                            <field name="product_ids" widget="many2many_tags"/>
+                            <field name="categ_ids" widget="many2many_tags"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Chi tiết đơn mua">
+                            <field name="order_line" nolabel="1" readonly="1">
+                                <tree create="false" default_order="order_id asc">
+                                    <field name="order_id" widget="many2one"/>
+                                    <field name="date_planned" widget="date" string="Ngày nhận hàng"/>
+                                    <field name="partner_id"/>
+                                    <field name="categ_id" string="Danh mục sản phẩm"/>
+                                    <field name="product_id"/>
+                                    <field name="product_uom_qty" sum="Tổng KL mua"/>
+                                    <field name="price_unit"/>
+                                    <field name="discount_value"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="purchase_report_tool_list_view" model="ir.ui.view">
+        <field name="name">purchase.report.tool.list</field>
+        <field name="model">purchase.report.tool</field>
+        <field name="priority">1</field>
+        <field name="arch" type="xml">
+            <tree string="Sản lượng mua hàng theo NCC">
+                <field name="name"/>
+                <field name="from_dt"/>
+                <field name="to_dt"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="purchase_report_tool_search_view" model="ir.ui.view">
+        <field name="name">purchase.report.tool.search</field>
+        <field name="model">purchase.report.tool</field>
+        <field name="arch" type="xml">
+            <search string="Sản lượng mua hàng theo NCC">
+                <field name="name"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="purchase_report_tool_action_form" model="ir.actions.act_window">
+        <field name="name">Sản lượng mua hàng theo NCC</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">purchase.report.tool</field>
+        <field name="search_view_id" ref="purchase_report_tool_search_view"/>
+        <field name="view_id" ref="purchase_report_tool_list_view"/>
+    </record>
+
+    <menuitem id="menu_purchase_report_tool_action_form"
+          action="purchase_report_tool_action_form"
+          groups="sales_team.group_sale_manager"
+          parent="purchase.purchase_report_main"
+          sequence="130"
+    />
+
+</odoo>

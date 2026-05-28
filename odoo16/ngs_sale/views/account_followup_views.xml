@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <record id="ngs_customer_statements_form_view" model="ir.ui.view">
+        <field name="name">customer.statements.ngs.followup</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="account_followup.customer_statements_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='unreconciled_aml_ids']/tree/field[@name='move_name']" position="attributes">
+                <attribute name="string">Mã hóa đơn</attribute>
+                <attribute name="optional">show</attribute>
+            </xpath>
+            <xpath expr="//field[@name='unreconciled_aml_ids']/tree/field[@name='invoice_origin']" position="attributes">
+                <attribute name="string">Đơn hàng</attribute>
+                <attribute name="optional">show</attribute>
+            </xpath>
+            <xpath expr="//field[@name='unreconciled_aml_ids']/tree/field[@name='date_maturity']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+            <xpath expr="//field[@name='unreconciled_aml_ids']/tree/field[@name='date_maturity']" position="before">
+                <field name="invoice_date_due_custom" widget="remaining_days"/>
+            </xpath>
+            <xpath expr="//field[@name='followup_next_action_date']" position="after">
+                <field name="max_overdue_days"/>
+            </xpath>
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_recompute_overdue_days" 
+                        type="object" 
+                        class="oe_stat_button" 
+                        icon="fa-refresh"
+                        string="Tính lại ngày quá hạn"
+                        help="Tính lại số ngày quá hạn tối đa của các hóa đơn"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="b4value_customer_statements_search_view" model="ir.ui.view">
+        <field name="name">b4value.account_followup.res.partner.search</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="account_followup.customer_statements_search_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='followup_line_id']" position="before">
+                <field name="name"/>
+                <field name="max_overdue_days"/>
+            </xpath>
+            <!-- Thêm filter cho Ngày quá hạn -->
+            <xpath expr="//group[@name='group_by']" position="inside">
+                <filter string="Quá hạn &gt; 30 ngày" name="overdue_gt_30" domain="[('max_overdue_days', '&gt;', 30)]"/>
+                <filter string="Quá hạn &gt; 60 ngày" name="overdue_gt_60" domain="[('max_overdue_days', '&gt;', 60)]"/>
+                <filter string="Quá hạn &gt; 90 ngày" name="overdue_gt_90" domain="[('max_overdue_days', '&gt;', 90)]"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="ngs_customer_statements_tree_view_inherit" model="ir.ui.view">
+        <field name="name">ngs.customer.statements.tree.inherit</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="account_followup.customer_statements_tree_view"/>
+        <field name="arch" type="xml">
+            <!-- Làm cho tất cả các trường có thể ẩn/hiện -->
+            <xpath expr="//field[@name='name']" position="attributes">
+                <attribute name="optional">show</attribute>
+            </xpath>
+            
+            <xpath expr="//field[@name='followup_responsible_id']" position="attributes">
+                <attribute name="optional">show</attribute>
+            </xpath>
+            
+            <xpath expr="//field[@name='user_id']" position="attributes">
+                <attribute name="optional">show</attribute>
+            </xpath>
+            
+            <xpath expr="//field[@name='followup_reminder_type']" position="attributes">
+                <attribute name="optional">show</attribute>
+            </xpath>
+            
+            <xpath expr="//field[@name='followup_status']" position="attributes">
+                <attribute name="optional">show</attribute>
+            </xpath>
+            
+            <xpath expr="//field[@name='followup_next_action_date']" position="attributes">
+                <attribute name="optional">show</attribute>
+            </xpath>
+            
+            <xpath expr="//field[@name='followup_line_id']" position="attributes">
+                <attribute name="optional">show</attribute>
+            </xpath>
+            
+            <xpath expr="//field[@name='total_due']" position="attributes">
+                <attribute name="optional">show</attribute>
+            </xpath>
+            
+            <xpath expr="//field[@name='total_overdue']" position="attributes">
+                <attribute name="optional">show</attribute>
+            </xpath>
+            
+            <xpath expr="//field[@name='total_due']" position="before">
+                <field name="max_overdue_days" string="Ngày quá hạn" optional="show"/>
+            </xpath>
+            
+            <xpath expr="//field[@name='company_id']" position="attributes">
+                <attribute name="optional">show</attribute>
+            </xpath>
+            
+            <xpath expr="//field[@name='activity_ids']" position="attributes">
+                <attribute name="optional">show</attribute>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <record id="view_company_form" model="ir.ui.view">
+        <field name="name">res.company.form</field>
+        <field name="model">res.company</field>
+        <field name="inherit_id" ref="base.view_company_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='social_media']" position="before">
+                <group name="sale_description" colspan="4" string="Điều khoản thanh toán đơn hàng">
+                    <field name="sale_description" nolabel="1" colspan="4"/>
+                </group>
+                <group name="delivery_receipt_construction_site" string="Điều khoản biên bản giao nhận" colspan="4">
+                    <field name="delivery_receipt_construction_site" widget="html"
+                         nolabel="1" colspan="4"
+                        placeholder="Căn cứ báo giá số: ... ký ngày: ...&#10;+ Phiếu giao hàng: ...&#10;Ngày: ..." />
+                </group>
+                <group name="delivery_receipt_footer_notes" string="Ghi chú cuối biên bản giao nhận" colspan="4">
+                    <field name="delivery_receipt_footer_notes" widget="html" nolabel="1" colspan="4"/>
+                </group>
+                <group name="purchase_description" colspan="4" string="Điều khoản thanh toán mua hàng">
+                    <field name="purchase_description" nolabel="1" colspan="4"/>
+                </group>
+                <group name="signature">
+                    <field name="signature_so"/>
+                    <field name="signature_po"/>
+                    <field name="signature" widget="image"/>
+                </group>
+                <group name="interest_settings" string="Cài đặt tính lãi vay" colspan="4">
+                    <field name="interest_calculation_extra_days"/>
+                </group>
+                <group name="report_settings" string="Cài đặt báo cáo" colspan="4">
+                    <field name="hide_report_footer"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

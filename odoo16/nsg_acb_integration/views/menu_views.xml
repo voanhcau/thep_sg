@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Actions -->
+    <record id="acb_dashboard_action" model="ir.actions.act_window">
+        <field name="name">Dashboard ACB</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">acb.transaction</field>
+        <field name="view_mode">kanban,tree,form</field>
+        <field name="search_view_id" ref="acb_transaction_search_view"/>
+        <field name="context">{'search_default_today': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Dashboard ACB
+            </p>
+            <p>
+                Xem tổng quan về các giao dịch ACB trong ngày.<br/>
+                <strong>Endpoint Test:</strong> <a href="/acb/webhook/test" target="_blank">/acb/webhook/test</a>
+            </p>
+        </field>
+    </record>
+
+    <record id="acb_transaction_report_action" model="ir.actions.act_window">
+        <field name="name">Báo cáo giao dịch</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">acb.transaction</field>
+        <field name="view_mode">graph,pivot,tree</field>
+        <field name="search_view_id" ref="acb_transaction_search_view"/>
+        <field name="context">{'search_default_this_month': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Xem báo cáo giao dịch ACB
+            </p>
+            <p>
+                Phân tích dữ liệu giao dịch từ ngân hàng ACB với các biểu đồ và bảng pivot.
+            </p>
+        </field>
+    </record>
+
+    <!-- Root menu -->
+    <menuitem id="acb_root_menu" 
+              name="ACB Integration" 
+              sequence="50"
+              web_icon="nsg_acb_integration,static/description/icon.png"/>
+
+    <!-- Main menu -->
+    <menuitem id="acb_main_menu" 
+              name="ACB Banking" 
+              parent="acb_root_menu" 
+              sequence="10"/>
+
+    <!-- Dashboard menu -->
+    <menuitem id="acb_dashboard_menu" 
+              name="Dashboard" 
+              parent="acb_main_menu" 
+              action="acb_dashboard_action" 
+              sequence="5"/>
+
+    <!-- Transaction menu -->
+    <menuitem id="acb_transaction_menu" 
+              name="Giao dịch" 
+              parent="acb_main_menu" 
+              action="acb_transaction_action" 
+              sequence="10"/>
+
+    <!-- Configuration menu -->
+    <menuitem id="acb_config_menu" 
+              name="Cấu hình" 
+              parent="acb_root_menu" 
+              sequence="20"/>
+
+    <!-- ACB Config menu -->
+    <menuitem id="acb_config_item_menu" 
+              name="Cấu hình ACB" 
+              parent="acb_config_menu" 
+              action="acb_config_action" 
+              sequence="10"/>
+
+    <!-- Reports menu -->
+    <menuitem id="acb_reports_menu" 
+              name="Báo cáo" 
+              parent="acb_root_menu" 
+              sequence="30"/>
+
+    <!-- Transaction Reports -->
+    <menuitem id="acb_transaction_report_menu" 
+              name="Báo cáo giao dịch" 
+              parent="acb_reports_menu" 
+              action="acb_transaction_report_action" 
+              sequence="10"/>
+
+    <!-- Tools menu -->
+    <menuitem id="acb_tools_menu" 
+              name="Công cụ" 
+              parent="acb_root_menu" 
+              sequence="40"/>
+
+    <!-- Fetch transactions wizard menu -->
+    <menuitem id="acb_fetch_wizard_menu" 
+              name="Lấy giao dịch" 
+              parent="acb_tools_menu" 
+              action="acb_fetch_wizard_action" 
+              sequence="10"/>
+
+</odoo> 

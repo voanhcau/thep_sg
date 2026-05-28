@@ -1,0 +1,28 @@
+.product-name {
+    min-width: 350px !important;
+    width: unset !important;
+}
+
+.single-space {
+    border: 1px solid #dee2e6;
+}
+.single-space td {
+    line-height: 10px !important;
+    padding: 10px !important;
+    width: 10px !important;
+    font-size: 12px !important;
+    border: 1px solid #dee2e6; /* Định dạng viền cho ô */
+}
+
+.header .table-custom tr {
+    border: none !important; /* Xóa viền bảng */
+}
+
+.header .table-custom td {
+    border: none !important; /* Xóa viền bảng */
+}
+
+#specific-table th,
+#specific-table td {
+    border: none !important; /* Xóa viền các ô */
+}

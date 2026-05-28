@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <record id="sale_commission_tool_form_view" model="ir.ui.view">
+        <field name="name">sale.commission.tool.form</field>
+        <field name="model">sale.commission.tool</field>
+        <field name="arch" type="xml">
+            <form class="oe_form_configuration">
+                <header>
+                    <button name="action_compute_commission" string="Áp dụng Chiết khấu và Hoa Hồng" type="object" states="draft,request" class="btn-primary" data-hotkey="r"/>
+                    <button name="action_approve" string="Duyệt và lưu trữ" type="object" states="request" class="btn-primary" data-hotkey="a"/>
+                    <button name="action_reset" string="Đưa về nháp" type="object" states="approved" class="btn-primary"/>
+                    <button name="action_cancel" string="Huỷ áp dụng Chiết khấu và Hoa Hồng" type="object" states="draft,request" class="btn-primary"/>
+                    <!-- <button name="make_payment" string="Xuất phiếu chi" type="object" states="approved" class="btn-primary"/> -->
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name" string="Tên"/>
+                        <h1>
+                            <field name="name" placeholder="e.g. Phiếu hoa hồng tháng 12"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="type"/>
+                            <field name="from_dt"/>
+                            <field name="to_dt"/>
+                            <field name="journal_id"
+                                   invisible="1"
+                                   options="{'no_create': True, 'no_edit': True}"/>
+                            <field name="tag_id" options="{'no_create': True, 'no_edit': True}"/>
+                            <field name="apply_po_commission"/>
+                        </group>
+                        <group>
+                            <field name="request_user_id" readonly="1"/>
+                            <field name="request_dt" readonly="1"/>
+                            <field name="approve_user_id" readonly="1"/>
+                            <field name="approve_dt" readonly="1"/>
+                        </group>
+                    </group>
+                    <group string="Cấu hình Chiết khấu / Hoa hồng">
+                        <group>
+                            <field name="commission_config_ids" nolabel="1" colspan="4">
+                                <tree string="Cấu hình Chiết khấu / Hoa hồng" editable="bottom">
+                                    <field name="supplier_id" context="{'res_partner_search_mode': 'supplier', 'show_vat': True}"/>
+                                    <field name="category_id"/>
+                                    <field name="supplier_discount"/>
+                                </tree>
+                            </field>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Đơn hàng" name="orders">
+                            <field name="sale_ids" nolabel="1" readonly="1"/>
+                        </page>
+                        <page string="Đơn mua hàng" name="purchase_orders" attrs="{'invisible': [('apply_po_commission', '=', False)]}">
+                            <field name="purchase_ids" nolabel="1" readonly="1"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="sale_commission_tool_list_view" model="ir.ui.view">
+        <field name="name">sale.commission.tool.list</field>
+        <field name="model">sale.commission.tool</field>
+        <field name="priority">1</field>
+        <field name="arch" type="xml">
+            <tree string="Tính hoa hồng">
+                <field name="name"/>
+                <field name="type"/>
+                <field name="from_dt"/>
+                <field name="to_dt"/>
+                <field name="request_user_id"/>
+                <field name="request_dt"/>
+                <field name="approve_user_id"/>
+                <field name="approve_dt"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="sale_commission_tool_search_view" model="ir.ui.view">
+        <field name="name">sale.commission.tool.search</field>
+        <field name="model">sale.commission.tool</field>
+        <field name="arch" type="xml">
+            <search string="Tính hoa hồng">
+                <field name="name"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="sale_commission_tool_action_form" model="ir.actions.act_window">
+        <field name="name">Áp thêm/bớt CK</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">sale.commission.tool</field>
+        <field name="search_view_id" ref="sale_commission_tool_search_view"/>
+        <field name="view_id" ref="sale_commission_tool_list_view"/>
+    </record>
+
+    <menuitem id="menu_sale_commission_tool_action_form"
+          action="sale_commission_tool_action_form"
+          groups="sales_team.group_sale_manager"
+          parent="sale.sale_order_menu"
+          sequence="70"
+    />
+
+</odoo>

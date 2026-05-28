@@ -1,0 +1,44 @@
+<odoo>
+    <data>
+
+        <record id="report_purchase_order_line_form_view" model="ir.ui.view">
+            <field name="name">report.purchase.order.line.form</field>
+            <field name="model">report.purchase.order.line</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Phiếu nhập mua hàng">
+                    <group colspan="4">
+                        <field name="purchase_order_ids"
+                               nolabel="1"
+                               colspan="4"
+                               options="{'no_create':True, 'no_open':True}"/>
+                    </group>
+                    <group>
+                        <field name="datas"/>
+                        <field name="datas_fname"/>
+                    </group>
+                    <footer>
+                        <button name="print_excel_report" string="Download Excel(xlsx) Report" type="object" class="oe_highlight"/>
+                        or
+                        <button string="Close" class="oe_link" special="cancel"/>
+                    </footer>
+
+                </form>
+            </field>
+        </record>
+
+        <record id="act_report_purchase_order_line" model="ir.actions.act_window">
+            <field name="name">Export - Phiếu nhập mua hàng (xlsx)</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">report.purchase.order.line</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="report_purchase_order_line_form_view"/>
+            <field name="target">new</field>
+        </record>
+
+        <menuitem id="menu_of_ms_action_report_stock_xlsx"
+                  action="act_report_purchase_order_line"
+                  parent="purchase.purchase_report_main" sequence="110"/>nhập
+
+    </data>
+</odoo>

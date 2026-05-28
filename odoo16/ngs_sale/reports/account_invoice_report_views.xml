@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_account_invoice_report_search_inherit_tags" model="ir.ui.view">
+        <field name="name">account.invoice.report.search.inherit.tags</field>
+        <field name="model">account.invoice.report</field>
+        <field name="inherit_id" ref="account.view_account_invoice_report_search"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group" position="inside">
+                <filter string="Thẻ" name="tags_text" context="{'group_by':'tags_text'}"/>
+            </xpath>
+            <xpath expr="//filter[@name='status']" position="after">
+                <field name="tags_text" string="Thẻ"/>
+                <filter string="Hóa đơn tồn kho" name="is_different_month" domain="[('is_different_month','=',True)]"/>
+            </xpath>
+        </field>
+    </record>   
+
+     <record id="account_invoice_report_view_tree" model="ir.ui.view">
+        <field name="name">account.invoice.report.tree.inherit</field>
+        <field name="model">account.invoice.report</field>
+        <field name="inherit_id" ref="account.account_invoice_report_view_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='move_id']" position="attributes">
+                <attribute name="string">Mã hóa đơn</attribute>
+            </xpath>
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="payment_reference" optional="show"/>
+            </xpath>
+        </field>
+    </record>   
+
+</odoo>

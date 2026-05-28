@@ -1,0 +1,198 @@
+/* ACB Integration Module Styles */
+
+/* Transaction status colors */
+.acb_transaction_completed {
+    color: #28a745;
+    font-weight: bold;
+}
+
+.acb_transaction_error {
+    color: #dc3545;
+    font-weight: bold;
+}
+
+.acb_transaction_pending {
+    color: #ffc107;
+    font-weight: bold;
+}
+
+.acb_transaction_cancelled {
+    color: #6c757d;
+    font-weight: bold;
+}
+
+/* Transaction amount styling */
+.acb_amount_credit {
+    color: #28a745;
+    font-weight: bold;
+}
+
+.acb_amount_debit {
+    color: #dc3545;
+    font-weight: bold;
+}
+
+.acb_amount_credit:before {
+    content: "+ ";
+}
+
+.acb_amount_debit:before {
+    content: "- ";
+}
+
+/* ACB Config status */
+.acb_config_active {
+    color: #28a745;
+}
+
+.acb_config_inactive {
+    color: #6c757d;
+}
+
+/* Dashboard cards */
+.acb_dashboard_card {
+    background: #fff;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.acb_dashboard_card h3 {
+    color: #333;
+    margin-bottom: 15px;
+}
+
+.acb_dashboard_stat {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.acb_dashboard_stat .label {
+    color: #666;
+}
+
+.acb_dashboard_stat .value {
+    font-weight: bold;
+    color: #333;
+}
+
+/* ACB Transaction form enhancements */
+.acb_transaction_form .o_form_sheet {
+    max-width: 1200px;
+}
+
+.acb_transaction_code {
+    font-family: monospace;
+    font-size: 1.2em;
+    color: #007bff;
+}
+
+.acb_client_id {
+    font-family: monospace;
+    font-size: 0.9em;
+    color: #666;
+}
+
+.acb_checksum {
+    font-family: monospace;
+    font-size: 0.8em;
+    color: #888;
+    word-break: break-all;
+}
+
+/* Raw data display */
+.acb_raw_data {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    padding: 10px;
+    font-family: monospace;
+    font-size: 0.9em;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+/* Webhook status indicators */
+.acb_webhook_status {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-right: 5px;
+}
+
+.acb_webhook_status.success {
+    background-color: #28a745;
+}
+
+.acb_webhook_status.error {
+    background-color: #dc3545;
+}
+
+.acb_webhook_status.warning {
+    background-color: #ffc107;
+}
+
+/* Transaction timeline */
+.acb_transaction_timeline {
+    position: relative;
+    padding-left: 30px;
+}
+
+.acb_transaction_timeline:before {
+    content: '';
+    position: absolute;
+    left: 10px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: #dee2e6;
+}
+
+.acb_transaction_timeline_item {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.acb_transaction_timeline_item:before {
+    content: '';
+    position: absolute;
+    left: -25px;
+    top: 5px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #007bff;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+    .acb_dashboard_card {
+        padding: 15px;
+    }
+    
+    .acb_dashboard_stat {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .acb_transaction_form .o_form_sheet {
+        max-width: 100%;
+    }
+}
+
+/* Print styles */
+@media print {
+    .acb_dashboard_card {
+        box-shadow: none;
+        border: 1px solid #000;
+    }
+    
+    .acb_raw_data {
+        max-height: none;
+        overflow: visible;
+    }
+} 

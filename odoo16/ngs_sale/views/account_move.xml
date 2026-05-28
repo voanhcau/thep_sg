@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <record id="ngs_sale_view_move_form" model="ir.ui.view">
+        <field name="name">account.move.form</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//label[@for='journal_id']" position="replace"/>
+            <xpath expr="//field[@name='journal_id']" position="replace"/>
+            <xpath expr="//div[@name='journal_div']" position="attributes">
+                <attribute name="invisible">True</attribute>
+            </xpath>
+            <xpath expr="//field[@name='journal_id']" position="attributes">
+                <attribute name="invisible">True</attribute>
+            </xpath>
+            <xpath expr="//page[@id='other_tab_entry']//field[@name='to_check']" position="after">
+                <field name="journal_id"/>
+            </xpath>
+            <xpath expr="//page[@id='other_tab']//field[@name='to_check']" position="after">
+                <field name="invoice_date_due_custom"/>
+                <field name="journal_id"/>
+                <field name="invoice_order_id" readonly="True"/>
+            </xpath>
+            <xpath expr="//field[@name='purchase_vendor_bill_id']" position="after">
+                <field name="transfer_cost"/>
+                <field name="transfer_text"/>
+            </xpath>
+            <xpath expr="//field[@name='invoice_line_ids']/tree/field[@name='quantity']" position="attributes">
+                <attribute name="string">KL (kg)</attribute>
+                <attribute name="sum">Tổng KL</attribute>
+                <attribute name="widget">float</attribute>
+            </xpath>
+            <button name="button_cancel" position="after">
+                <button name="compute_self_invoice_order" 
+                        type="object" 
+                        string="Lấy hoá đơn đối ứng của mua/bán (hoá đơn này)" 
+                        attrs="{'invisible': [('state', 'not in', ['posted', 'cancel'])]}"
+                        groups="base.group_no_one"
+                        class="btn-danger"/>
+
+                <button name="compute_invoice_order" 
+                        type="object" 
+                        string="Lấy hoá đơn đối ứng của mua/bán (tất cả hoá đơn)" 
+                        attrs="{'invisible': [('state', 'not in', ['posted', 'cancel'])]}"
+                        groups="base.group_no_one"
+                        class="btn-danger"/>
+
+                <button name="action_reset_to_draft_sql" 
+                        type="object" 
+                        string="Hủy Hoá đơn và định giá tồn kho" 
+                        attrs="{'invisible': [('state', 'not in', ['posted', 'cancel'])]}"
+                        groups="base.group_no_one"
+                        class="btn-danger"/>
+                <button name="recompute_all_total_quantity"
+                        type="object"
+                        string="Tính lại tổng số lượng"
+                        class="btn-primary"/>
+                <button name="recompute_all_actual_payment_days"
+                        type="object"
+                        string="Tính lại số ngày tt quá hạn tất cả HĐ"
+                        class="btn-primary"/>
+
+                <button name="recompute_actual_payment_days"
+                        type="object"
+                        string="Tính lại số ngày tt quá hạn HĐ này"
+                        class="btn-primary"/>
+            </button>
+            <xpath expr="//group[@id='header_left_group']/field[@name='partner_id']" position="after">
+                <label for="no_output_invoice" string="Không xuất hoá đơn" style="font-weight:bold;"/>
+                <field name="no_output_invoice" nolabel="1" />
+            </xpath>
+            <xpath expr="//field[@name='payment_reference']" position="attributes">
+                <attribute name="string">Số hoá đơn</attribute>
+                <attribute name="invisible">False</attribute>
+            </xpath>
+            <xpath expr="//field[@name='payment_reference']" position="after">
+                <field name="product_type" invisible="1"/>
+                <field name="tag_ids" widget="many2many_tags" options="{'color_field': 'color'}" string="Thẻ"/>
+            </xpath>
+            <xpath expr="//label[@for='ref']" position="attributes">
+                <attribute name="string">Mã/số hóa đơn</attribute>
+            </xpath>
+            <xpath expr="//field[@name='invoice_date']" position="after">
+                <field name="order_received_date"/>
+                <field name="actual_payment_days"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="ngs_sale_view_account_invoice_filter" model="ir.ui.view">
+        <field name="name">account.move.form</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_account_invoice_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='date']" position="after">
+                <field name="no_output_invoice"/>
+                <field name="payment_reference" string="Số hoá đơn"/>
+                <field name="payment_state"/>
+                <field name="tag_ids"/>
+                <field name="order_received_date"/>
+                <field name="actual_payment_days"/>
+                <field name="invoice_payment_term_id"/>
+            </xpath>
+            <xpath expr="//filter[@name='date']" position="after">
+                <filter name="no_output_invoice"
+                        domain="[('no_output_invoice', '=', True)]"
+                        string="Không xuất hoá đơn"/>
+                <filter string="Tình trạng thanh toán" name="payment_state" context="{'group_by': 'payment_state'}"/>
+                <filter string="Thẻ" name="tag_ids" domain="[('tag_ids', '!=', False)]"/>
+                <filter string="Số ngày trả thực tế" name="actual_payment_days" context="{'group_by': 'actual_payment_days'}"/>
+            </xpath>
+            <xpath expr="//group" position="inside">
+                <field name="tag_ids" string="Thẻ" context="{'group_by': 'tag_ids'}"/>
+                <field name="order_received_date" string="Ngày nhận hàng" context="{'group_by': 'order_received_date'}"/>
+                <field name="actual_payment_days" string="Số ngày trả thực tế" context="{'group_by': 'actual_payment_days'}"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="nsg_view_invoice_tree" model="ir.ui.view">
+        <field name="name">account.move.ngs.tree</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_invoice_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='payment_reference']" position="after">
+                <field name="product_type" optional="hide"/>
+                <field name="order_received_date" optional="show"/>
+                <field name="transfer_cost" optional="hide"/>
+                <field name="transfer_text" optional="hide"/>
+            </xpath>
+            <xpath expr="//field[@name='payment_reference']" position="attributes">
+                <attribute name="string">Số hóa đơn</attribute>
+                <attribute name="invisible">False</attribute>
+                <attribute name="optional">show</attribute>
+            </xpath>
+            <xpath expr="//field[@name='date']" position="attributes">
+                <attribute name="invisible">True</attribute>
+            </xpath>
+            <xpath expr="//field[@name='state']" position="after">
+                <field name="tag_ids" widget="many2many_tags" options="{'color_field': 'color'}" string="Thẻ" optional="hide"/>
+                <field name="invoice_date_due_custom" optional="hide"/>
+                <field name="actual_payment_days" optional="hide"/>
+                <field name="invoice_payment_term_id" optional="hide"/>
+            </xpath>
+            <xpath expr="//field[@name='amount_untaxed_signed']" position="before">
+                <field name="total_quantity" optional="hide" sum="Tổng KL (kg)"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

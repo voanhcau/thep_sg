@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Real ACB Configuration -->
+        <record id="real_acb_config" model="acb.config">
+            <field name="name">ACB Production Configuration</field>
+            <field name="api_base_url">https://sandbox.acb.com.vn/acb/open/transactions/notification-api-adapter/v1</field>
+            <field name="api_notification_url">https://sandbox.acb.com.vn/acb/open/transactions/notification-api-adapter/v1/rtxn-notification</field>
+            <field name="client_id">30735a42d5313ce3a29284d3cbfd1d8f</field>
+            <field name="secret_key">c3a571706fe79e816e918d6386d23a4f</field>
+            <field name="virtual_account_id">ACB001</field>
+            <field name="virtual_account_prefix">NSG</field>
+            <field name="webhook_url">/acb/webhook/transaction</field>
+            <field name="active">True</field>
+            <field name="enable_logging">True</field>
+        </record>
+
+        <!-- Demo ACB Configuration for testing -->
+        <record id="demo_acb_config" model="acb.config">
+            <field name="name">Demo ACB Configuration</field>
+            <field name="api_base_url">https://sandbox.acb.com.vn/acb/open/transactions/notification-api-adapter/v1</field>
+            <field name="api_notification_url">https://sandbox.acb.com.vn/acb/open/transactions/notification-api-adapter/v1/rtxn-notification</field>
+            <field name="client_id">demo_client_id</field>
+            <field name="secret_key">demo_secret_key</field>
+            <field name="virtual_account_id">DEMO001</field>
+            <field name="virtual_account_prefix">DEMO</field>
+            <field name="webhook_url">/acb/webhook/transaction</field>
+            <field name="active">False</field>
+            <field name="enable_logging">True</field>
+        </record>
+
+        <!-- Sample Transaction Data (for development/testing) -->
+        <record id="sample_transaction_webhook" model="acb.transaction">
+            <field name="client_id">30735a42d5313ce3a29284d3cbfd1d8f</field>
+            <field name="client_request_id">webhook_sample_001</field>
+            <field name="checksum">e0ee0e98c7ce911eb57c69190ca540</field>
+            <field name="transaction_status">COMPLETED</field>
+            <field name="transaction_channel">IBFT</field>
+            <field name="transaction_code">WH001</field>
+            <field name="account_number">887988</field>
+            <field name="transaction_date">2024-01-15 10:30:00</field>
+            <field name="effective_date">2024-01-15 10:30:00</field>
+            <field name="debit_or_credit">credit</field>
+            <field name="amount">500000</field>
+            <field name="amount_in_currency">500000</field>
+            <field name="transaction_content">THANH TOAN DON HANG SO 001</field>
+            <field name="virtual_account_id">ACB001</field>
+            <field name="issue_bank_name">ACB</field>
+            <field name="virtual_account">ACB001</field>
+            <field name="reference_number">REF001</field>
+            <field name="partner_customer_code">CUST001</field>
+            <field name="partner_customer_name">KHACH HANG DEMO</field>
+            <field name="partner_customer_type">ORG</field>
+            <field name="source_type">webhook</field>
+            <field name="state">processed</field>
+            <field name="raw_data">{"clientId": "30735a42d5313ce3a29284d3cbfd1d8f", "source": "webhook_demo"}</field>
+        </record>
+
+        <record id="sample_transaction_api" model="acb.transaction">
+            <field name="client_id">30735a42d5313ce3a29284d3cbfd1d8f</field>
+            <field name="client_request_id">api_sample_001</field>
+            <field name="checksum">a1bb1a11c1cc111bb11c11111ca111</field>
+            <field name="transaction_status">COMPLETED</field>
+            <field name="transaction_channel">API</field>
+            <field name="transaction_code">API001</field>
+            <field name="account_number">887988</field>
+            <field name="transaction_date">2024-01-15 14:45:00</field>
+            <field name="effective_date">2024-01-15 14:45:00</field>
+            <field name="debit_or_credit">credit</field>
+            <field name="amount">750000</field>
+            <field name="amount_in_currency">750000</field>
+            <field name="transaction_content">THANH TOAN QUA API CALL</field>
+            <field name="virtual_account_id">ACB001</field>
+            <field name="issue_bank_name">ACB</field>
+            <field name="source_type">api_call</field>
+            <field name="api_call_time">2024-01-15 14:45:00</field>
+            <field name="state">processed</field>
+            <field name="raw_data">{"clientId": "30735a42d5313ce3a29284d3cbfd1d8f", "source": "api_demo"}</field>
+        </record>
+
+        <!-- System Parameters -->
+        <record id="acb_webhook_timeout" model="ir.config_parameter">
+            <field name="key">acb.webhook.timeout</field>
+            <field name="value">30</field>
+        </record>
+
+        <record id="acb_auto_process" model="ir.config_parameter">
+            <field name="key">acb.auto_process</field>
+            <field name="value">True</field>
+        </record>
+
+        <record id="acb_logging_enabled" model="ir.config_parameter">
+            <field name="key">acb.logging.enabled</field>
+            <field name="value">True</field>
+        </record>
+
+        <record id="acb_max_retries" model="ir.config_parameter">
+            <field name="key">acb.max_retries</field>
+            <field name="value">3</field>
+        </record>
+
+        <record id="acb_api_rate_limit" model="ir.config_parameter">
+            <field name="key">acb.api.rate_limit</field>
+            <field name="value">100</field>
+        </record>
+
+        <record id="acb_webhook_secret" model="ir.config_parameter">
+            <field name="key">acb.webhook.secret</field>
+            <field name="value">acb_webhook_secret_2024</field>
+        </record>
+
+        <!-- Email template for transaction errors -->
+        <record id="acb_transaction_error_email_template" model="mail.template">
+            <field name="name">ACB Transaction Error Notification</field>
+            <field name="model_id" ref="model_acb_transaction"/>
+            <field name="subject">⚠️ Lỗi giao dịch ACB - ${object.transaction_code}</field>
+            <field name="email_from">${user.email_formatted}</field>
+            <field name="email_to">${object.company_id.email}</field>
+            <field name="body_html"><![CDATA[
+                <div style="margin: 0px; padding: 0px; font-family: Arial, sans-serif;">
+                    <h2 style="color: #dc3545;">🚨 Lỗi Giao Dịch ACB</h2>
+                    <p>Xin chào,</p>
+                    <p>Có lỗi xảy ra khi xử lý giao dịch ACB:</p>
+                    <table style="border-collapse: collapse; width: 100%; margin: 20px 0;">
+                        <tr style="background-color: #f8f9fa;">
+                            <td style="border: 1px solid #ddd; padding: 8px; font-weight: bold;">Mã giao dịch:</td>
+                            <td style="border: 1px solid #ddd; padding: 8px;">${object.transaction_code}</td>
+                        </tr>
+                        <tr>
+                            <td style="border: 1px solid #ddd; padding: 8px; font-weight: bold;">Số tiền:</td>
+                            <td style="border: 1px solid #ddd; padding: 8px;">${object.amount_in_currency} ${object.currency_id.name}</td>
+                        </tr>
+                        <tr style="background-color: #f8f9fa;">
+                            <td style="border: 1px solid #ddd; padding: 8px; font-weight: bold;">Thời gian:</td>
+                            <td style="border: 1px solid #ddd; padding: 8px;">${object.transaction_date}</td>
+                        </tr>
+                        <tr>
+                            <td style="border: 1px solid #ddd; padding: 8px; font-weight: bold;">Nguồn:</td>
+                            <td style="border: 1px solid #ddd; padding: 8px;">${object.source_type}</td>
+                        </tr>
+                        <tr style="background-color: #f8f9fa;">
+                            <td style="border: 1px solid #ddd; padding: 8px; font-weight: bold;">Nội dung:</td>
+                            <td style="border: 1px solid #ddd; padding: 8px;">${object.transaction_content}</td>
+                        </tr>
+                        <tr style="background-color: #ffebee;">
+                            <td style="border: 1px solid #ddd; padding: 8px; font-weight: bold; color: #dc3545;">Lỗi:</td>
+                            <td style="border: 1px solid #ddd; padding: 8px; color: #dc3545;">${object.error_message}</td>
+                        </tr>
+                    </table>
+                    <p><strong>Hành động cần thiết:</strong></p>
+                    <ul>
+                        <li>Kiểm tra log hệ thống để biết thêm chi tiết</li>
+                        <li>Xác minh kết nối API ACB</li>
+                        <li>Xử lý giao dịch thủ công nếu cần</li>
+                    </ul>
+                    <p>Trân trọng,<br/>
+                    <strong>Hệ thống ACB Integration</strong><br/>
+                    <em>NSG ERP Team</em></p>
+                </div>
+            ]]></field>
+        </record>
+
+        <!-- Email template for API connection errors -->
+        <record id="acb_api_error_email_template" model="mail.template">
+            <field name="name">ACB API Connection Error</field>
+            <field name="model_id" ref="model_acb_config"/>
+            <field name="subject">🔌 Lỗi kết nối ACB API - ${object.name}</field>
+            <field name="email_from">${user.email_formatted}</field>
+            <field name="email_to">${object.company_id.email}</field>
+            <field name="body_html"><![CDATA[
+                <div style="margin: 0px; padding: 0px; font-family: Arial, sans-serif;">
+                    <h2 style="color: #dc3545;">🔌 Lỗi Kết Nối ACB API</h2>
+                    <p>Xin chào,</p>
+                    <p>Hệ thống không thể kết nối đến ACB API:</p>
+                    <ul>
+                        <li><strong>Cấu hình:</strong> ${object.name}</li>
+                        <li><strong>Client ID:</strong> ${object.client_id}</li>
+                        <li><strong>API URL:</strong> ${object.api_notification_url}</li>
+                        <li><strong>Thời gian:</strong> ${datetime.datetime.now()}</li>
+                    </ul>
+                    <p>Vui lòng kiểm tra kết nối mạng và cấu hình API.</p>
+                    <p>Trân trọng,<br/>Hệ thống ACB Integration</p>
+                </div>
+            ]]></field>
+        </record>
+
+    </data>
+</odoo> 

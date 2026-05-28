@@ -1,0 +1,25 @@
+<odoo>
+
+    <data noupdate="1">
+        <!-- Master Data: Sale Processing States -->
+        <record id="sale_processing_state_xlvc" model="sale.processing.state">
+            <field name="name">XLVC</field>
+            <field name="description">Xử lý văn chính</field>
+        </record>
+
+        <record id="sale_processing_state_xlcltl" model="sale.processing.state">
+            <field name="name">XLCLTL</field>
+            <field name="description">Xử lý công lệnh thiếu liên</field>
+        </record>
+
+        <record id="sale_processing_state_dgcltl" model="sale.processing.state">
+            <field name="name">DGCLTL</field>
+            <field name="description">Đang giải quyết công lệnh thiếu liên</field>
+        </record>
+
+        <record id="sale_processing_state_daxl" model="sale.processing.state">
+            <field name="name">Đã XL</field>
+            <field name="description">Đã xử lý</field>
+        </record>
+    </data>
+</odoo>

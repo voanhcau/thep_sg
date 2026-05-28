@@ -1,0 +1,31 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+    <data noupdate="1">
+
+        <record id="default_res_partner_type_0" model="res.partner.type">
+            <field name="name">Thương mại</field>
+        </record>
+
+        <record id="default_res_partner_type_1" model="res.partner.type">
+            <field name="name">Công trình</field>
+        </record>
+
+        <record id="default_res_partner_type_2" model="res.partner.type">
+            <field name="name">Cũ</field>
+        </record>
+
+        <record id="default_res_partner_type_3" model="res.partner.type">
+            <field name="name">Mới</field>
+            <field name="is_default">True</field>
+        </record>
+
+    </data>
+
+    <data noupdate="0">
+
+        <record id="default_res_partner_import" model="res.partner">
+            <field name="name">import</field>
+        </record>
+
+    </data>
+</odoo>

@@ -1,0 +1,398 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <!-- <record model="ir.ui.view" id="view_quotation_tree">
+        <field name="name">sale.order.tree.ngs</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_quotation_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='team_id']" position="after">
+                <field name="shipping_cost" optional="hide"/>
+                <field name="total_product_qty" optional="hide"/>
+            </xpath>
+        </field>
+    </record> -->
+
+    <record id="nsg_view_quotation_tree_with_onboarding" model="ir.ui.view">
+        <field name="name">sale.order.tree.processing.state</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_quotation_tree_with_onboarding"/>
+        <field name="arch" type="xml">
+            <xpath expr="//tree" position="inside">
+                <field name="margin_each_unit" optional="hide"/>
+                <field name="shipping_cost" invisible="True"/>
+                <field name="payment_term_id" optional="hide" string="Điều khoản TT"/>
+                <field name="invoice_posted_date" optional="hide"/>
+                <field name="note" optional="hide" string="Ghi chú"/>
+                <field name="xltl" optional="hide" string="XLTL"/>
+            </xpath>
+            <xpath expr="//field[@name='amount_untaxed']" position="before">
+                <field name="total_difference_qty" optional="hide" sum="KL Chênh"/>
+                <field name="total_product_qty" optional="hide" sum="Tổng KL (kg)"/>
+            </xpath>
+            <xpath expr="//field[@name='invoice_status']" position="replace"/>
+        </field>
+    </record>
+
+
+    <record model="ir.ui.view" id="sale_order_view_search_inherit_quotation">
+        <field name="name">sale.order.search.inherit.quotation</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.sale_order_view_search_inherit_quotation"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='my_quotation']" position="replace">
+                <field name="support_user_id"/>
+                <field name="invoice_posted_date"/>
+                <field name="payment_term_id"/>
+                <field name="tag_ids"/>
+                <field name="type_id"/>
+                <filter string="Đơn hàng của tôi" name="my_quotation" domain="['|', ('user_id', '=', uid), ('support_user_id', '=', uid)]"/>
+                <separator/>
+                <filter string="Loại KH (SO)" name="group_by_type_id" context="{'group_by': 'type_id'}"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="b4value_sale_margin_sale_order_line_form">
+        <field name="name">b4value.sale.order.line.tree.margin.view.form</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale_margin.sale_margin_sale_order_line_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@class='text-nowrap']" position="after">
+                <label for="margin_each_unit" groups="sales_team.group_sale_salesman"/>
+                <div class="text-nowrap" groups="sales_team.group_sale_salesman">
+                    <field name="margin_each_unit" class="oe_inline"/>
+                    <span class="oe_inline" attrs="{'invisible': [('margin_each_unit', '=', 0)]}">
+                        (đ/kg)
+                    </span>
+                </div>
+                <label for="seller_commission" groups="sales_team.group_sale_manager"/>
+                <div class="text-nowrap" groups="sales_team.group_sale_manager">
+                    <field name="seller_commission" class="oe_inline"/>
+                    <span class="oe_inline">
+                        ( đ )
+                    </span>
+                </div>
+                <label for="total_difference_qty" groups="sales_team.group_sale_salesman"/>
+                <div class="text-nowrap" groups="sales_team.group_sale_salesman">
+                    <field name="total_difference_qty" class="oe_inline"/>
+                    <span class="oe_inline">
+                        (kg)
+                    </span>
+                </div>
+            </xpath>
+            <xpath expr="//field[@name='margin']" position="attributes">
+                <attribute name="sum">Tổng lợi nhuận</attribute>
+                <attribute name="widget">monetary</attribute>
+                <attribute name="groups">sales_team.group_sale_salesman</attribute>
+            </xpath>
+            <xpath expr="//field[@name='margin_percent']" position="attributes">
+                <attribute name="groups">sales_team.group_sale_salesman</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="nsg_sale_margin_sale_order">
+        <field name="name">nsg.sale.order.margin.form</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale_margin.sale_margin_sale_order"/>
+        <field name="arch" type="xml">
+            <xpath expr="//label[@for='margin']" position="attributes">
+                <attribute name="groups">sales_team.group_sale_salesman</attribute>
+            </xpath>
+            <xpath expr="//div[hasclass('text-nowrap')]" position="attributes">
+                <attribute name="groups">sales_team.group_sale_salesman</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_order_form_inherit_sale_stock" model="ir.ui.view">
+        <field name="name">sale.order.form</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale_stock.view_order_form_inherit_sale_stock"/>
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='action_view_delivery']" position="before">
+                <button name="action_view_purchases"
+                    type="object"
+                    class="oe_stat_button"
+                    icon="fa-pencil-square-o"
+                    attrs="{'invisible': [('purchase_count', '=', 0)]}">
+                    <field name="purchase_count" widget="statinfo" string="Chi phí"/>
+                </button>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_order_form" model="ir.ui.view">
+        <field name="name">sale.order.form</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='payment_term_id']" position="after">
+                <field name="received_date" attrs="{'readonly': [('state', 'in', ['done', 'approved'])]}"/>
+            </xpath>
+            <xpath expr="//button[@name='action_cancel']" position="attributes">
+                <attribute name="attrs">
+                    {'invisible': ['|', ('state', 'not in', ['draft', 'sent', 'sale']), ('id', '=', False)]}
+                </attribute>
+                <attribute name="groups">base.group_user</attribute>
+            </xpath>
+            <xpath expr="//button[@name='action_cancel']" position="after">
+                <button name="action_cancel"
+                        type="object"
+                        string="Hủy"
+                        groups="sales_team.group_sale_manager"
+                        attrs="{'invisible': ['|', ('state', '!=', 'approved'), ('id', '=', False)]}"/>
+            </xpath>
+            <xpath expr="//header" position="inside">
+                <button name="action_approve"
+                        groups="sales_team.group_sale_manager"
+                        type="object"
+                        string="Duyệt"
+                        attrs="{'invisible': ['|', ('state', 'not in', ['sale', 'done']), ('id', '=', False)]}"/>
+                <button name="calculate_interest" 
+                        type="object"
+                        string="Tính lại lãi vay"
+                        groups="base.group_no_one"
+                />
+            </xpath>
+            <xpath expr="//field[@name='user_id']" position="replace">
+                <field name="invoice_posted_date" readonly="True"/>
+                <!-- <field name="invoice_state" readonly="True"/> -->
+                <field name="interest_amount" readonly="True"/>
+                <field name="interest_per_kg" readonly="True"/>
+            </xpath>
+            <xpath expr="//field[@name='partner_id']" position="attributes">
+                <attribute name="options">{'no_create': True}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='pricelist_id']" position="attributes">
+                <attribute name="domain">[('type', '=', 'sale')]</attribute>
+            </xpath>
+            <xpath expr="//field[@name='invoice_status']" position="replace"/>
+            <xpath expr="//field[@name='analytic_account_id']" position="before">
+                <field name="invoice_status_custom"/>
+            </xpath>
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="type_id" attrs="{'readonly': [('state', '=', 'approved')]}"/>
+                <field name="user_id" attrs="{'readonly': [('state', '=', 'approved')]}"/>
+                <field name="support_user_id" attrs="{'readonly': [('state', '=', 'approved')]}"/>
+                <field name="supplier_id" invisible="True"/>
+                <field name="shipping_cost" string="XLVC" invisible="True"/>
+                <field name="xltl" string="XLTL"/>
+                <field name="tag_ids" widget="many2many_tags" 
+                    options="{'color_field': 'color'}" 
+                    string="Thẻ" 
+                    attrs="{'readonly': [('state', '=', 'approved')]}"/>
+            </xpath>
+            <xpath expr="//field[@name='order_line']//tree/field[@name='name']" position="attributes">
+                <attribute name="class">product-name</attribute>
+            </xpath>
+            <xpath expr="//field[@name='order_line']//tree/field[@name='product_template_id']" position="attributes">
+                <attribute name="class">product-name</attribute>
+            </xpath>
+            <xpath expr="//field[@name='order_line']//tree/field[@name='product_id']" position="attributes">
+                <attribute name="class">product-name</attribute>
+                <attribute name="style">min-width: 200px; width: 200px;</attribute>
+            </xpath>
+            <xpath expr="//field[@name='order_line']//tree/field[@name='product_uom']" position="replace"/>
+            <xpath expr="//field[@name='order_line']//tree/field[@name='product_uom']" position="replace">
+                <field name="product_uom" string="ĐVT" 
+                    style="min-width: 50px; width: 50px;"/>
+            </xpath>
+            <xpath expr="//field[@name='order_line']//tree/field[@name='product_uom_qty']" position="after">
+                <field name="quantity_extra" optional="hide" sum="KL Chênh"/>
+                <field name="difference_qty" optional="hide" sum="KL Chênh Lệch" invisible="True"/>
+            </xpath>
+            <xpath expr="//field[@name='order_line']//tree/field[@name='name']" position="after">
+                <field name="supplier_ids" context="{'res_partner_search_mode': 'supplier', 'show_vat': True}" optional="hide"/>
+                <field name="supplier_id" options="{'no_create': True}"
+                       context="{'res_partner_search_mode': 'supplier', 'show_vat': True}"
+                       optional="hide"/>
+                <field name="supplier_product_code" optional="hide"/>
+                <field name="supplier_delivery_type_id" optional="hide"/>
+            </xpath>
+            <xpath expr="//field[@name='order_line']//tree/field[@name='price_unit']" position="attributes">
+                <attribute name="string">Đơn giá bán</attribute>
+            </xpath>
+            <xpath expr="//field[@name='order_line']//tree/field[@name='name']" position="attributes">
+                <attribute name="optional">hide</attribute>
+            </xpath>
+            <!-- <xpath expr="//field[@name='order_line']//tree/field[@name='purchase_price_each_unit']" position="attributes">
+                <attribute name="groups">sales_team.group_sale_manager</attribute>
+            </xpath> -->
+            <xpath expr="//field[@name='show_update_pricelist']" position="before">
+                <field name="purchase_pricelist_id" groups="base.group_no_one"/>
+                <field name="sale_type" attrs="{'readonly': [('state', '=', 'approved')]}"/>
+                <field name="auto_purchase_order_id" readonly="True"/>
+            </xpath>
+            <xpath expr="//field[@name='interest_amount']" position="attributes">
+                <attribute name="groups">sales_team.group_sale_salesman</attribute>
+            </xpath>
+            <xpath expr="//field[@name='interest_per_kg']" position="attributes">
+                <attribute name="groups">sales_team.group_sale_salesman</attribute>
+            </xpath>
+            <xpath expr="//field[@name='order_line']//tree/field[@name='price_unit']" position="before">
+                <field name="length" optional="hide"/>
+                <field name="discount_value" optional="hide"/>
+                <field name="cost_price" optional="hide"/>
+                <field name="base_price" groups="base.group_no_one" optional="hide"/>
+                <field name="price_landing" optional="hide"/>
+                <field name="price_shipping" groups="base.group_no_one" optional="hide"/>
+                <field name="supplier_discount_peer_month" groups="base.group_no_one" optional="hide"/>
+                <field name="supplier_discount_peer_quarter" groups="base.group_no_one" optional="hide"/>
+                <field name="supplier_commission_person" groups="base.group_no_one" optional="hide"/>
+                <field name="sale_commission_person"  groups="base.group_no_one" optional="hide"/>
+            </xpath>
+            <xpath expr="//field[@name='order_line']//tree/field[@name='purchase_price']" position="replace"/>
+            <xpath expr="//field[@name='order_line']//tree/field[@name='margin']" position="replace"/>
+            <xpath expr="//field[@name='order_line']//tree/field[@name='margin_percent']" position="replace"/>
+            <xpath expr="//field[@name='order_line']//tree/field[@name='price_subtotal']" position="replace"/>
+            <xpath expr="//field[@name='order_line']//tree/field[@name='price_subtotal']" position="replace">
+                <field name="price_subtotal" optional="show"/>
+                <field name="purchase_uom_qty" optional="hide" sum="Tổng KL(mua)"/>
+                <field name="purchase_price" optional="hide" string="Giá vốn" groups="sales_team.group_sale_salesman"/>
+                <field name="purchase_amount" optional="hide" sum="Tổng tiền mua"/>
+                <field name="purchase_price_each_unit" optional="hide"/>
+                <field name="margin" optional="hide" string="Biên LN (đ)" widget="monetary" groups="sales_team.group_sale_salesman"/>
+                <field name="margin_percent" optional="hide" string="Biên LN (%)" groups="sales_team.group_sale_salesman"/>
+            </xpath>
+            <xpath expr="//field[@name='order_line']//tree/field[@name='product_uom_qty']" position="attributes">
+                <attribute name="string">KL (kg)</attribute>
+                <attribute name="sum">Tổng KL</attribute>
+                <attribute name="optional">hide</attribute>
+                <attribute name="widget">float</attribute>
+            </xpath>
+            <xpath expr="//field[@name='order_line']//tree/field[@name='price_tax']" position="attributes">
+                <attribute name="optional">hide</attribute>
+            </xpath>
+            <xpath expr="//field[@name='order_line']//tree/field[@name='tax_id']" position="attributes">
+                <attribute name="optional">hide</attribute>
+            </xpath>
+            <xpath expr="//field[@name='order_line']//tree/field[@name='discount']" position="attributes">
+                <attribute name="invisible">True</attribute>
+            </xpath>
+            <xpath expr="//field[@name='order_line']//tree/field[@name='product_uom_qty']" position="before">
+                <field name="quantity_another1"/>
+                <field name="quantity_another2"/>
+                <field name="quantity_another3"/>
+            </xpath>
+            <xpath expr="//group[@name='sale_total']" position="before">
+                <group colspan="4">
+                    <field colspan="2" name="sale_description" nolabel="True" attrs="{'readonly': [('state', '=', 'approved')]}"/>
+                </group>
+            </xpath>
+            <xpath expr="//button[@name='action_draft']" position="after">
+                <button name="action_create_po"
+                        type="object"
+                        string="Thêm chi phí"
+                        attrs="{'invisible': [('state', '=', 'approved')]}"
+                        data-hotkey="p"/>
+                <field name="has_purchase" invisible="1"/>
+                <button string="Tạo đơn mua hàng"
+                        attrs="{'invisible': ['|', ('state', '=', 'approved'), ('has_purchase', '=', True)]}"
+                        name="action_create_purchase_order"
+                        type="object"
+                        class="text-warning btn-secondary"
+                />
+                <button string="Cập nhật đơn mua"
+                        attrs="{'invisible': ['|', ('state', '=', 'approved'), ('has_purchase', '!=', True)]}"
+                        confirm="Bạn có muốn cập nhật đơn mua?"
+                        name="action_create_purchase_order"
+                        type="object"
+                        class="text-warning btn-secondary"
+                />
+            </xpath>
+            <xpath expr="//field[@name='partner_id']" position="attributes">
+                <attribute name="attrs">{'readonly': [('state', '=', 'approved')]}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='partner_invoice_id']" position="attributes">
+                <attribute name="attrs">{'readonly': [('state', '=', 'approved')]}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='partner_shipping_id']" position="attributes">
+                <attribute name="attrs">{'readonly': [('state', '=', 'approved')]}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='validity_date']" position="attributes">
+                <attribute name="attrs">{'readonly': [('state', '=', 'approved')]}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='date_order' and not(@groups)]" position="attributes">
+                <attribute name="attrs"/>
+            </xpath>
+            <xpath expr="//div[hasclass('o_td_label') and not(@groups)]" position="attributes">
+                <attribute name="attrs"></attribute>
+            </xpath>
+            
+            <xpath expr="//field[@name='pricelist_id']" position="attributes">
+                <attribute name="attrs">{'readonly': [('state', '=', 'approved')]}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='payment_term_id']" position="attributes">
+                <attribute name="string">Điều khoản TT</attribute>
+                <attribute name="attrs">{'readonly': [('state', '=', 'approved')]}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='order_line']" position="attributes">
+                <attribute name="attrs">{'readonly': [('state', '=', 'approved')]}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='client_order_ref']" position="attributes">
+                <attribute name="attrs">{'readonly': [('state', '=', 'approved')]}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='note']" position="attributes">
+                <attribute name="attrs">{'readonly': [('state', '=', 'approved')]}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='company_id']" position="attributes">
+                <attribute name="attrs">{'readonly': [('state', '=', 'approved')]}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='currency_id']" position="attributes">
+                <attribute name="attrs">{'readonly': [('state', '=', 'approved')]}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='tax_country_id']" position="attributes">
+                <attribute name="attrs">{'readonly': [('state', '=', 'approved')]}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='analytic_account_id']" position="attributes">
+                <attribute name="attrs">{'readonly': [('state', '=', 'approved')]}</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_order_form_with_carrier" model="ir.ui.view">
+        <field name="name">sale.order.form</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="delivery.view_order_form_with_carrier"/>
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='action_open_delivery_wizard']" position="before">
+                <button
+                        string="Đề xuất giá bán"
+                        name="action_building_extra_cost"
+                        confirm="Giá vốn, số lượng (kg), giá bán sẻ thay đổi dựa trên bảng giá mua/bán. Bạn có chắc chắn muốn thực hiện ?"
+                        type="object"
+                        states="draft"
+                />
+                <button
+                        string="Cập nhuật lợi nhuận"
+                        name="update_margin"
+                        confirm="Hành động thực hiện cập nhật lại lợi nhuận của đơn bán hàng, bạn chắc chắn muốn thực hiện ?"
+                        type="object"
+                        groups="base.group_no_one"
+                />
+            </xpath>
+            <xpath expr="//button[@name='action_open_delivery_wizard']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="custom_view_sales_order_filter" model="ir.ui.view">
+        <field name="name">sale.order.ngs.form</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_sales_order_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='user_id']" position="after">
+                <field name="partner_type_id"/>
+                <field name="type_id"/>
+            </xpath>
+            <xpath expr="//filter[@name='customer']" position="after">
+                <filter name="partner_type" string="Loại khách hàng" domain="[]" context="{'group_by': 'partner_type_id'}"/>
+                <filter name="type_so" string="Loại KH (SO)" domain="[]" context="{'group_by': 'type_id'}"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

@@ -1,0 +1,6 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_acb_transaction_user,acb.transaction.user,model_acb_transaction,base.group_user,1,0,0,0
+access_acb_transaction_manager,acb.transaction.manager,model_acb_transaction,account.group_account_manager,1,1,1,1
+access_acb_config_user,acb.config.user,model_acb_config,base.group_user,1,0,0,0
+access_acb_config_manager,acb.config.manager,model_acb_config,account.group_account_manager,1,1,1,0
+access_acb_fetch_wizard_user,acb.fetch.wizard.user,model_acb_fetch_wizard,base.group_user,1,1,1,1

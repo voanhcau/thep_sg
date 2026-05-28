@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!--    <template id="report_document_tax_totals" inherit_id="account.document_tax_totals" priority="50">-->
+    <!--        <xpath expr="//tr[hasclass('o_total')]" position="replace">-->
+    <!--            <tr class="border-black o_total">-->
+    <!--                <t t-if="has_rounding"><td style="line-height: 10px !important;padding: 0px !important; padding-top: 0px !important">Tổng cộng</td></t>-->
+    <!--                <t t-else=""><td style="line-height: 10px !important;padding: 0px !important; padding-top: 0px !important"><strong>Tổng cộng</strong></td></t>-->
+    <!--                <td class="text-end" style="line-height: 10px !important;padding: 0px !important; padding-top: 0px !important">-->
+    <!--                    <span t-esc="tax_totals['formatted_amount_total']"/>-->
+    <!--                </td>-->
+    <!--            </tr>-->
+    <!--        </xpath>-->
+    <!--    </template>-->
+
+    <template id="custom_external_layout_standard" inherit_id="web.external_layout_standard">
+        <xpath expr="//div[@t-attf-class='header o_company_#{company.id}_layout']" position="replace">
+            <div t-attf-class="header o_company_#{company.id}_layout" t-att-style="report_header_style">
+                <style>
+                    @font-face {
+                        font-family: "Times New Roman";
+                        src: local("Times New Roman"), local("TimesNewRoman");
+                    }
+
+                    body, div, table, p, span {
+                        font-family: "Times New Roman", serif !important;
+                    }
+                </style>
+                <div class="row">
+                    <div class="col-3 mb4">
+                        <img t-if="company.logo" t-att-src="image_data_uri(company.logo)" style="max-height: 45px; margin-top: 25px" alt="Logo"/>
+                    </div>
+                    <div class="col-8" style="margin-top:22px; text-align: left">
+                        <h4 style="margin: 0; font-weight: bold;">CÔNG TY TNHH XNK TM NAM SÀI GÒN</h4>
+                        <p style="margin: 5px 0;">Đ/c: 236 Đường số 8, KDC Nam Long, P. Tân Thuận Đông, Q7, TPHCM</p>
+                        <p style="margin: 5px 0;">MST: 031 292 6036</p>
+                        <p style="margin: 5px 0;">
+                            Hotline: 0915.79.89.09 ; Email: <a href="mailto:congtynsg.pkd@gmail.com">congtynsg.pkd@gmail.com</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </xpath>
+    </template>
+
+    <template id="report_saleorder_document" inherit_id="sale.report_saleorder_document" priority="50">
+        <xpath expr="//table[contains(@class, 'o_main_table')]" position="attributes">
+            <attribute name="class">
+                table table-bordered
+            </attribute>
+        </xpath>
+        <xpath expr="//div[@name='so_total_summary']" position="replace">
+            <div class="clearfix" name="so_total_summary">
+                <div id="total" class="row" name="total">
+                    <t t-set="tax_totals" t-value="doc.tax_totals"/>
+                    <div t-attf-class="#{'col-6' if report_type != 'html' else 'col-sm-7 col-md-6'} ms-auto">
+                        <table class="table table-sm">
+                            <tr class="single-space" style="border-top: unset !important">
+                                <td style="line-height: 10px !important;border: unset !important;border-color: #fff">
+                                    Thuế VAT:
+                                </td>
+                                <td class="text-end"
+                                    style="line-height: 10px !important!important;border: unset !important;border-color: #fff">
+                                    <t
+                                            t-att-class="oe_subtotal_footer_separator"
+                                            t-esc="tax_totals['amount_tax_str']"
+                                    />
+                                </td>
+                            </tr>
+                            <tr class="single-space" style="border-top: unset !important">
+                                <td style="line-height: 10px !important; border: unset !important;border-color: #fff">
+                                    Tổng cộng:
+                                </td>
+                                <td class="text-end"
+                                    style="line-height: 10px !important; border: unset !important;border-color: #fff">
+                                    <t t-att-class="oe_subtotal_footer_separator"
+                                       t-esc="tax_totals['formatted_amount_total']"
+                                    />
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </xpath>
+        <xpath expr="//t[@t-set='address']" position="before">
+            <div style="text-align: center">
+                <h4>
+                    BẢNG BÁO GIÁ KIÊM XÁC NHẬN ĐƠN ĐẶT HÀNG #
+                    <span t-field="doc.name"/>
+                </h4>
+            </div>
+            <br/>
+            <div class="col-12">
+                <p>
+                    <strong>Kính gửi:</strong>
+                    <span t-esc="doc.partner_id.display_name"/>
+                </p>
+            </div>
+        </xpath>
+        <xpath expr="//tr[hasclass('is-subtotal')]" position="replace">
+            <tr class="is-subtotal text-end">
+                <td name="td_section_subtotal" colspan="99">
+                    <strong class="mr16">Trước thuế</strong>
+                    <span
+                            t-out="current_subtotal"
+                            t-options='{"widget": "monetary", "display_currency": doc.pricelist_id.currency_id}'
+                    />
+                </td>
+            </tr>
+        </xpath>
+        <xpath expr="//t[@t-set='address']" position="replace"/>
+        <xpath expr="//h2[hasclass('mt-4')]" position="replace">
+        </xpath>
+        <xpath expr="//thead" position="replace">
+            <thead style="display: table-row-group">
+                <tr>
+                    <th name="th_description" class="text-start" style="width: 25%">Sản phẩm</th>
+                    <th name="th_description" class="text-start" style="width: 5 %">NSX</th>
+                    <th name="th_description" class="text-start">QC</th>
+                    <th name="th_quantity" class="text-end">L(m)</th>
+                    <th name="th_quantity" class="text-end">
+                        SL CÂY
+                        <br/>
+                        (BÀNH)
+                    </th>
+                    <!--                    <th name="th_quantity" class="text-end">Số cây/bó</th>-->
+                    <th name="th_quantity" class="text-end">
+                        <t t-if="doc.sale_type in ['0_2', '0_4']">
+                            BR TCVN
+                        </t>
+                        <t t-else="">
+                            BRNM
+                        </t>
+                    </th>
+                    <th name="th_quantity" class="text-end">KL (kg)</th>
+                    <th name="th_priceunit" class="text-end">
+                        Đơn giá
+                        <br/>
+                        (chưa VAT)
+                    </th>
+                    <th name="th_discount" t-if="display_discount" class="text-end"
+                        groups="product.group_discount_per_so_line">
+                        <span>Giảm giá.%</span>
+                    </th>
+                    <th name="th_subtotal" class="text-end" style="width: 15%">
+                        Thành tiền
+                        <br/>
+                        (VNĐ)
+                    </th>
+                </tr>
+            </thead>
+        </xpath>
+        <xpath expr="//t[@t-foreach='lines_to_report']" position="replace">
+            <t t-set="total_product_uom_qty" t-value="0.0"/>
+            <t t-foreach="lines_to_report" t-as="line">
+                <t t-set="current_subtotal" t-value="current_subtotal + line.price_subtotal"
+                   groups="account.group_show_line_subtotals_tax_excluded"/>
+                <t t-set="current_subtotal" t-value="current_subtotal + line.price_total"
+                   groups="account.group_show_line_subtotals_tax_included"/>
+                <tr class="single-space">
+                    <td name="td_name" class="text-start">
+                        <t t-if="line.product_id">
+                            <span t-field="line.product_id.name"/>
+                        </t>
+                        <t t-else="">
+                            <span t-field="line.name"/>
+                        </t>
+                    </td>
+                    <td name="td_name" class="text-start">
+                        <span t-field="line.supplier_product_code"/>
+                    </td>
+                    <td name="td_name" class="text-start">
+                        <t t-if="line.supplier_delivery_type_id">
+                            <span t-field="line.supplier_delivery_type_id.name"/>
+                        </t>
+                    </td>
+                    <td name="td_name" class="text-end">
+                        <span t-field="line.length"/>
+                    </td>
+                    <td name="td_name" class="text-end">
+                        <span t-field="line.quantity_another1"/>
+                    </td>
+                    <!--                    <td name="td_name" class="text-end"><span t-field="line.quantity_another2"/></td>-->
+                    <td name="td_quantity" class="text-end">
+                        <t t-if="doc.sale_type in ['0_2', '0_4']">
+                            <span t-esc="round(line.product_id.quantity_tcvn, 2) if line.product_id.quantity_tcvn else 0"/>
+                        </t>
+                        <t t-else="">
+                            <span t-esc="round(line.product_id.quantity_supplier, 2) if line.product_id.quantity_supplier else 0"/>
+                        </t>
+
+                    </td>
+                    <td name="td_quantity" class="text-end">
+                        <span t-field="line.product_uom_qty"/>
+                        <t t-set="total_product_uom_qty" t-value="total_product_uom_qty + line.product_uom_qty"/>
+                    </td>
+                    <td name="td_priceunit" class="text-end">
+                        <span t-field="line.price_unit"/>
+                    </td>
+                    <td t-if="display_discount" class="text-end" groups="product.group_discount_per_so_line">
+                        <span t-field="line.discount"/>
+                    </td>
+                    <td style="line-height: 10px !important;padding: 0px !important; padding-top: 0px !important; width: 15%"
+                        name="td_subtotal" class="text-end o_price_total">
+                        <span t-field="line.price_subtotal"/>
+                    </td>
+                </tr>
+            </t>
+            <tr class="single-space">
+                <td name="td_name" class="text-start"></td>
+                <td name="td_name" class="text-start"/>
+                <td name="td_name" class="text-end"></td>
+                <td name="td_name" class="text-end"></td>
+                <td style="line-height: 10px !important;padding: 0px !important; padding-top: 0px !important; border-top: 1px solid #C9CCD2"
+                    name="td_name" class="text-end">
+                    <span t-field="doc.total_quantity_another1"/>
+                </td>
+                <!--                <td name="td_name" class="text-end"></td>-->
+                <td name="td_name" class="text-end"></td>
+                <td style="line-height: 10px !important;padding: 0px !important; padding-top: 0px !important; border-top: 1px solid #C9CCD2"
+                    name="td_quantity" class="text-end">
+                    <span t-esc="total_product_uom_qty" t-options='{"widget": "float", "decimal_precision": "Product Unit of Measure", "format_decimals": 2}'/>
+                </td>
+                <td class="text-end o_price_total"></td>
+                <td style="line-height: 10px !important;padding: 0px !important; padding-top: 0px !important; width: 15%; border-top: 1px solid #C9CCD2"
+                    name="td_subtotal" class="text-end o_price_total">
+                    <t t-set="tax_totals" t-value="doc.tax_totals"/>
+                    <span t-esc="tax_totals['formatted_amount_untaxed']"/>
+                </td>
+            </tr>
+        </xpath>
+        <xpath expr="//div[@id='informations']" position="replace">
+            <div class="row mt-4 mb-4" id="informations">
+                <table class="table table-sm"
+                       style="line-height: 10px !important;padding: 0px !important; padding-top: 0px !important;border: unset !important;border-color: #fff;border-top: unset !important">
+                    <tr class="single-space">
+                        <td style="line-height: 10px !important;padding: 0px !important; padding-top: 0px !important;border: unset !important;border-color: #fff;border-top: unset !important">
+                            <strong>Ngày báo giá:</strong>
+                        </td>
+                        <td class="text-start"
+                            style="text-align: left; line-height: 10px !important;padding: 0px !important; padding-top: 0px !important;border: unset !important;border-color: #fff;border-top: unset !important">
+                            <p t-if="doc.date_order" class="m-0" t-esc="doc.date_order.strftime('%d/%m/%Y')"/>
+                        </td>
+                        <td style="line-height: 10px !important;padding: 0px !important; padding-top: 0px !important;border: unset !important;border-color: #fff;border-top: unset !important">
+                            <strong>Hết hạn:</strong>
+                        </td>
+                        <td class="text-start"
+                            style="text-align: left; line-height: 10px !important;padding: 0px !important; padding-top: 0px !important;border: unset !important;border-color: #fff;border-top: unset !important">
+                            <p t-if="doc.validity_date" class="m-0" t-esc="doc.validity_date.strftime('%d/%m/%Y')"/>
+                        </td>
+                    </tr>
+                    <tr class="single-space" style="border-top: unset !important">
+                        <td style="line-height: 10px !important;padding: 0px !important; padding-top: 0px !important;border: unset !important;border-color: #fff">
+                            <strong>Bộ phận phát hành:</strong>
+                        </td>
+                        <td class="text-start"
+                            style="text-align: left; line-height: 10px !important;padding: 0px !important; padding-top: 0px !important;border: unset !important;border-color: #fff">
+                            Phòng Kinh Doanh
+                        </td>
+                        <td style="line-height: 10px !important;padding: 0px !important; padding-top: 0px !important;border: unset !important;border-color: #fff">
+                            <strong>Người phát hành:</strong>
+                        </td>
+                        <td t-if="doc.user_id" class="text-start"
+                            style="text-align: left; line-height: 10px !important;padding: 0px !important; padding-top: 0px !important;border: unset !important;border-color: #fff">
+                            <span t-field="doc.user_id"/>
+                        </td>
+                        <td class="text-start"
+                            style="line-height: 10px !important;padding: 0px !important; padding-top: 0px !important;border: unset !important;border-color: #fff">
+                            <strong>ĐT:</strong>
+                        </td>
+                        <td t-if="doc.user_id and doc.user_id.mobile" class="text-start"
+                            style="text-align: left; line-height: 10px !important;padding: 0px !important; padding-top: 0px !important;border: unset !important;border-color: #fff">
+                            <span t-field="doc.user_id.mobile"/>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </xpath>
+        <xpath expr="//p[@t-field='doc.note']" position="replace"/>
+        <xpath expr="//span[@t-field='doc.payment_term_id.note']" position="replace"/>
+        <xpath expr="//p[@id='fiscal_position_remark']" position="replace"/>
+        <xpath expr="//div[@name='signature']" position="after">
+            <div t-if="doc.note">
+                <p style="font-size:14px" t-field="doc.note" name="order_note"/>
+            </div>
+            <div t-if="doc.sale_description">
+                <p style="font-size:14px">
+                    <span t-field="doc.sale_description"/>
+                </p>
+            </div>            
+            <div class="row mt-4 mb-4" id="informations_2">
+                <div t-if="doc.user_id.name" class="col-auto col-3 mw-100 mb-2">
+                    <strong>Họ tên người được quyền nhận hàng:</strong>
+                </div>
+                <div t-if="doc.user_id.name" class="col-auto col-3 mw-100 mb-2">
+                    <strong>Số điện thoại:</strong>
+                </div>
+            </div>
+            <!--            <div style="page-break-after: always;"><br/></div>-->
+            <div class="row mt-4 mb-4">
+                <div class="col-auto col-6 mw-100 mb-2">
+                    <strong>CÔNG TY TNHH XNK NAM SÀI GÒN</strong>
+                    <t t-if="doc and doc.company_id and doc.company_id.signature and doc.company_id.signature_so">
+                        <br/>
+                        <img t-att-src="image_data_uri(doc.company_id.signature)" style="max-height: 5cm; max-width: 18cm; float: left; "/>
+                    </t>
+                </div>
+                <div class="col-auto col-6 mw-100 mb-2">
+                    <strong>XÁC NHẬN ĐẶT HÀNG</strong>
+                </div>
+            </div>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+            <br/>
+        </xpath>
+    </template>
+
+</odoo>

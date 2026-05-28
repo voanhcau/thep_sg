@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Tree View -->
+        <record id="view_invoice_payment_analysis_report_tree" model="ir.ui.view">
+            <field name="name">invoice.payment.analysis.report.tree</field>
+            <field name="model">invoice.payment.analysis.report</field>
+            <field name="arch" type="xml">
+                <tree string="Báo cáo phân tích thanh toán hóa đơn" 
+                      decoration-danger="is_overdue == True"
+                      decoration-warning="payment_delay &gt; 0 and payment_delay &lt;= 7"
+                      decoration-info="payment_state == 'partial'">
+                    <field name="name" optional="show"/>
+                    <field name="invoice_date" optional="show"/>
+                    <field name="delivery_date" optional="show"/>
+                    <field name="partner_name" optional="show"/>
+                    <field name="move_type" optional="show"/>
+                    <field name="amount_total" sum="Tổng cộng" optional="show"/>
+                    <field name="amount_paid" sum="Tổng đã trả" optional="show"/>
+                    <field name="amount_residual" sum="Tổng còn lại" optional="show"/>
+                    <field name="payment_state" widget="badge" 
+                           decoration-success="payment_state == 'paid'"
+                           decoration-warning="payment_state == 'partial'"
+                           decoration-danger="payment_state == 'not_paid'"
+                           optional="show"/>
+                    <field name="invoice_date_due" optional="show"/>
+                    <field name="payment_term_id" optional="show"/>
+                    <field name="payment_delay" widget="integer" 
+                           decoration-danger="payment_delay &gt; 30"
+                           decoration-warning="payment_delay &gt; 7"
+                           optional="show"/>
+                    <field name="actual_payment_days" widget="integer" optional="show"/>
+                    <field name="is_overdue" invisible="1"/>
+                    <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Search View -->
+        <record id="view_invoice_payment_analysis_report_search" model="ir.ui.view">
+            <field name="name">invoice.payment.analysis.report.search</field>
+            <field name="model">invoice.payment.analysis.report</field>
+            <field name="arch" type="xml">
+                <search string="Tìm kiếm báo cáo thanh toán">
+                    <field name="name"/>
+                    <field name="partner_name"/>
+                    <field name="payment_term_id"/>
+                    <field name="delivery_date"/>
+                    <field name="company_id" groups="base.group_multi_company"/>
+                    <separator/>
+                    <filter string="Hóa đơn khách hàng" name="customer_invoices" 
+                            domain="[('move_type', '=', 'out_invoice')]"/>
+                    <filter string="Hóa đơn nhà cung cấp" name="vendor_invoices" 
+                            domain="[('move_type', '=', 'in_invoice')]"/>
+                    <separator/>
+                    <filter string="Đã thanh toán" name="paid" 
+                            domain="[('payment_state', '=', 'paid')]"/>
+                    <filter string="Chưa thanh toán" name="not_paid" 
+                            domain="[('payment_state', '=', 'not_paid')]"/>
+                    <filter string="Thanh toán một phần" name="partial" 
+                            domain="[('payment_state', '=', 'partial')]"/>
+                    <filter string="Đang thanh toán" name="in_payment" 
+                            domain="[('payment_state', '=', 'in_payment')]"/>
+                    <separator/>
+                    <filter string="Quá hạn" name="overdue" 
+                            domain="[('is_overdue', '=', True)]"/>
+                    <filter string="Đúng hạn" name="on_time" 
+                            domain="[('is_overdue', '=', False), ('payment_delay', '&gt;', 0)]"/>
+                    <filter string="Chưa thanh toán" name="not_paid_yet" 
+                            domain="[('payment_delay', '=', 0)]"/>
+                    <separator/>
+                    <filter string="Chậm trả 1-7 ngày" name="delay_1_7" 
+                            domain="[('payment_delay', '&gt;=', 1), ('payment_delay', '&lt;=', 7)]"/>
+                    <filter string="Chậm trả 8-30 ngày" name="delay_8_30" 
+                            domain="[('payment_delay', '&gt;=', 8), ('payment_delay', '&lt;=', 30)]"/>
+                    <filter string="Chậm trả &gt; 30 ngày" name="delay_over_30" 
+                            domain="[('payment_delay', '&gt;', 30)]"/>
+                    <separator/>
+                    <filter string="Trả trong 7 ngày" name="actual_payment_7_days" 
+                            domain="[('actual_payment_days', '&gt;=', 0), ('actual_payment_days', '&lt;=', 7)]"/>
+                    <filter string="Trả trong 8-30 ngày" name="actual_payment_8_30_days" 
+                            domain="[('actual_payment_days', '&gt;=', 8), ('actual_payment_days', '&lt;=', 30)]"/>
+                    <filter string="Trả sau 30 ngày" name="actual_payment_over_30_days" 
+                            domain="[('actual_payment_days', '&gt;', 30)]"/>
+                    <group expand="0" string="Group By">
+                        <filter string="Khách hàng/Nhà cung cấp" name="group_partner" 
+                                context="{'group_by': 'partner_name'}"/>
+                        <filter string="Trạng thái thanh toán" name="group_payment_state" 
+                                context="{'group_by': 'payment_state'}"/>
+                        <filter string="Điều khoản thanh toán" name="group_payment_term" 
+                                context="{'group_by': 'payment_term_id'}"/>
+                        <filter string="Loại hóa đơn" name="group_move_type" 
+                                context="{'group_by': 'move_type'}"/>
+                        <filter string="Công ty" name="group_company" 
+                                context="{'group_by': 'company_id'}" groups="base.group_multi_company"/>
+                        <filter string="Tiền tệ" name="group_currency" 
+                                context="{'group_by': 'currency_id'}"/>
+                        <separator/>
+                        <filter string="Tháng hóa đơn" name="group_invoice_month" 
+                                context="{'group_by': 'invoice_date:month'}"/>
+                        <filter string="Quý hóa đơn" name="group_invoice_quarter" 
+                                context="{'group_by': 'invoice_date:quarter'}"/>
+                        <filter string="Năm hóa đơn" name="group_invoice_year" 
+                                context="{'group_by': 'invoice_date:year'}"/>
+                        <filter string="Tháng hạn thanh toán" name="group_due_month" 
+                                context="{'group_by': 'invoice_date_due:month'}"/>
+                        <filter string="Quý hạn thanh toán" name="group_due_quarter" 
+                                context="{'group_by': 'invoice_date_due:quarter'}"/>
+                        <filter string="Năm hạn thanh toán" name="group_due_year" 
+                                context="{'group_by': 'invoice_date_due:year'}"/>
+                        <filter string="Tháng nhận hàng" name="group_delivery_month" 
+                                context="{'group_by': 'delivery_date:month'}"/>
+                        <filter string="Quý nhận hàng" name="group_delivery_quarter" 
+                                context="{'group_by': 'delivery_date:quarter'}"/>
+                        <filter string="Năm nhận hàng" name="group_delivery_year" 
+                                context="{'group_by': 'delivery_date:year'}"/>
+                        <separator/>
+                        <filter string="Số ngày trả thực tế" name="group_actual_payment_days" 
+                                context="{'group_by': 'actual_payment_days'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- Graph View -->
+        <record id="view_invoice_payment_analysis_report_graph" model="ir.ui.view">
+            <field name="name">invoice.payment.analysis.report.graph</field>
+            <field name="model">invoice.payment.analysis.report</field>
+            <field name="arch" type="xml">
+                <graph string="Biểu đồ phân tích thanh toán" type="bar">
+                    <field name="partner_name"/>
+                    <field name="amount_total" type="measure"/>
+                    <field name="amount_paid" type="measure"/>
+                    <field name="amount_residual" type="measure"/>
+                    <field name="payment_delay" type="measure"/>
+                    <field name="actual_payment_days" type="measure"/>
+                </graph>
+            </field>
+        </record>
+
+        <!-- Pivot View -->
+        <record id="view_invoice_payment_analysis_report_pivot" model="ir.ui.view">
+            <field name="name">invoice.payment.analysis.report.pivot</field>
+            <field name="model">invoice.payment.analysis.report</field>
+            <field name="arch" type="xml">
+                <pivot string="Bảng phân tích thanh toán">
+                    <field name="partner_name" type="row"/>
+                    <field name="payment_state" type="col"/>
+                    <field name="amount_total" type="measure"/>
+                    <field name="amount_paid" type="measure"/>
+                    <field name="amount_residual" type="measure"/>
+                    <field name="payment_delay" type="measure"/>
+                    <field name="actual_payment_days" type="measure"/>
+                </pivot>
+            </field>
+        </record>
+
+        <!-- Form View -->
+        <record id="view_invoice_payment_analysis_report_form" model="ir.ui.view">
+            <field name="name">invoice.payment.analysis.report.form</field>
+            <field name="model">invoice.payment.analysis.report</field>
+            <field name="arch" type="xml">
+                <form string="Chi tiết báo cáo thanh toán">
+                    <sheet>
+                        <group>
+                            <group string="Thông tin hóa đơn">
+                                <field name="invoice_id" widget="many2one"/>
+                                <field name="name"/>
+                                <field name="invoice_date"/>
+                                <field name="delivery_date"/>
+                                <field name="move_type"/>
+                                <field name="amount_total"/>
+                                <field name="amount_paid"/>
+                                <field name="amount_residual"/>
+                                <field name="payment_state" widget="badge"/>
+                                <field name="currency_id" groups="base.group_multi_currency"/>
+                            </group>
+                            <group string="Thông tin đối tác">
+                                <field name="partner_id" widget="many2one"/>
+                                <field name="partner_name"/>
+                                <field name="company_id" groups="base.group_multi_company"/>
+                            </group>
+                        </group>
+                        <group>
+                            <group string="Thời hạn thanh toán">
+                                <field name="invoice_date_due"/>
+                                <field name="payment_term_id" widget="many2one"/>
+                            </group>
+                            <group string="Thông tin thanh toán thực tế">
+                                <field name="payment_delay"/>
+                                <field name="actual_payment_days"/>
+                                <field name="is_overdue"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Action -->
+        <record id="action_invoice_payment_analysis_report" model="ir.actions.act_window">
+            <field name="name">Báo cáo phân tích thanh toán hóa đơn</field>
+            <field name="res_model">invoice.payment.analysis.report</field>
+            <field name="view_mode">tree,form,graph</field>
+            <field name="context">{'search_default_customer_invoices': 1}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Chưa có dữ liệu báo cáo thanh toán
+                </p>
+                <p>
+                    Báo cáo này hiển thị thông tin về thời hạn thanh toán và số ngày trả thực tế của các hóa đơn.
+                </p>
+            </field>
+        </record>
+
+        <!-- Menu Item -->
+        <menuitem id="menu_action_invoice_payment_analysis_report"
+                  name="Báo cáo phân tích thanh toán"
+                  parent="account.menu_finance_reports"
+                  action="action_invoice_payment_analysis_report"
+                  sequence="50"/>
+
+    </data>
+</odoo> 

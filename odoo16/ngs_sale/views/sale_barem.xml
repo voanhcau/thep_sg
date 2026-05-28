@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <record id="sale_barem_form_view" model="ir.ui.view">
+        <field name="name">sale.barem.form</field>
+        <field name="model">sale.barem</field>
+        <field name="arch" type="xml">
+            <form class="oe_form_configuration">
+                <sheet>
+                    <div class="oe_title">
+                        <label for="supplier_id" string="Nhà cung cấp"/>
+                        <h1>
+                            <field name="supplier_id" placeholder="e.g. Pomina"/>
+                        </h1>
+                    </div>
+                    <group name="first" col="2">
+                        <field name="code" class="oe_inline"/>
+                        <field name="size" class="oe_inline"/>
+                        <field name="product_id" class="oe_inline"/>
+                        <field name="quantity_supplier" class="oe_inline"/>
+                        <field name="quantity_tcvn" class="oe_inline"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="sale_barem_list_view" model="ir.ui.view">
+        <field name="name">sale.barem.list</field>
+        <field name="model">sale.barem</field>
+        <field name="priority">1</field>
+        <field name="arch" type="xml">
+            <tree string="Barem">
+                <field name="supplier_id"/>
+                <field name="code"/>
+                <field name="size"/>
+                <field name="product_id"/>
+                <field name="quantity_supplier"/>
+                <field name="quantity_tcvn"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="sale_barem_search_view" model="ir.ui.view">
+        <field name="name">sale.barem.search</field>
+        <field name="model">sale.barem</field>
+        <field name="arch" type="xml">
+            <search string="Barem">
+                <field name="supplier_id"/>
+                <field name="code"/>
+                <field name="size"/>
+                <field name="product_id"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="sale_barem_action_form" model="ir.actions.act_window">
+        <field name="name">Barem</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">sale.barem</field>
+        <field name="search_view_id" ref="sale_barem_search_view"/>
+        <field name="view_id" ref="sale_barem_list_view"/>
+    </record>
+
+<!--    <menuitem id="menu_sale_barem_action_form"-->
+<!--          action="sale_barem_action_form"-->
+<!--          groups="sales_team.group_sale_manager"-->
+<!--          parent="sale.product_menu_catalog"-->
+<!--          sequence="70"-->
+<!--    />-->
+
+</odoo>

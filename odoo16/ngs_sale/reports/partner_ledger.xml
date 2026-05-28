@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="account_reports.partner_ledger_report" model="account.report">
+        <field name="name">Sổ chi tiết công nợ</field>
+        <field name="column_ids">
+            <record id="partner_ledger_report_move_ref" model="account.report.column">
+                <field name="name">Số hóa đơn</field>
+                <field name="expression_label">payment_reference</field>
+                <field name="figure_type">none</field>
+                <field name="sequence">4</field>
+            </record>
+        </field>
+    </record>
+</odoo>

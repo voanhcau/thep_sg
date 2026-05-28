@@ -1,0 +1,93 @@
+
+======================================================================
+🚀 SETUP COMPANY DATA
+======================================================================
+Environment: test
+Company ID: 2
+Tasks: contacts + products (both will run)
+======================================================================
+
+🔗 Connecting to test environment...
+✅ Connected to http://test.thepnamsaigon.com (DB: test.thepnamsaigon.com)
+
+======================================================================
+Running Task 1: Setup Contacts
+======================================================================
+
+======================================================================
+👥 SETTING UP CONTACTS
+======================================================================
+Company ID: 2
+======================================================================
+
+  → Finding Payment Term 'Thanh toán ngay' or 'Immediate Payment'...
+    ✓ Found Payment Term: 'Immediate Payment' (ID: 1)
+  → Finding Pricelist '[Bán] Mặc định'...
+    ⚠️  Pricelist '[Bán] Mặc định' not found by name
+    → Trying to use pricelist ID 14 as fallback...
+    ✓ Using fallback pricelist ID 14: 'Cộng 30đ'
+  → Getting all contacts...
+    ✓ Found 1224 contacts
+  → Processing contacts...
+    Processing batch 1/13 (100 contacts)...
+    Processing batch 2/13 (100 contacts)...
+    Processing batch 3/13 (100 contacts)...
+    Processing batch 4/13 (100 contacts)...
+    Processing batch 5/13 (100 contacts)...
+    Processing batch 6/13 (100 contacts)...
+    Processing batch 7/13 (100 contacts)...
+    Processing batch 8/13 (100 contacts)...
+    Processing batch 9/13 (100 contacts)...
+    Processing batch 10/13 (100 contacts)...
+    Processing batch 11/13 (100 contacts)...
+    Processing batch 12/13 (100 contacts)...
+    Processing batch 13/13 (24 contacts)...
+
+======================================================================
+✅ SETUP COMPLETED
+======================================================================
+📊 Results:
+   ✓ Updated Payment Terms: 0
+   ⏭️  Skipped Payment Terms (already set): 1224
+   ✓ Updated Pricelists: 0
+   ⏭️  Skipped Pricelists (already set): 1224
+   ⚠️  Errors: 0
+======================================================================
+
+
+======================================================================
+Running Task 2: Setup Products
+======================================================================
+
+======================================================================
+📦 SETTING UP STOCKABLE PRODUCTS
+======================================================================
+Company ID: 2
+======================================================================
+
+  → Finding Tax 'Thuế GTGT phải nộp 10% x' or 'VAT 10%' for sale...
+    ✓ Found Tax: 'Value Added Tax (VAT) 10%' (ID: 10)
+  → Getting all stockable products...
+    ✓ Found 268 stockable products
+  → Processing products...
+    Processing batch 1/6 (50 products)...
+    Processing batch 2/6 (50 products)...
+    Processing batch 3/6 (50 products)...
+    Processing batch 4/6 (50 products)...
+    Processing batch 5/6 (50 products)...
+    Processing batch 6/6 (18 products)...
+
+======================================================================
+✅ SETUP COMPLETED
+======================================================================
+📊 Results:
+   ✓ Updated products: 0
+   ⏭️  Skipped products (already set): 268
+   ⚠️  Errors: 0
+======================================================================
+
+
+======================================================================
+✅ ALL TASKS COMPLETED SUCCESSFULLY
+======================================================================
+

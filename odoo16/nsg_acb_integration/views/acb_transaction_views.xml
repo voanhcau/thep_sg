@@ -1,0 +1,313 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Tree view for ACB transactions -->
+    <record id="acb_transaction_tree_view" model="ir.ui.view">
+        <field name="name">acb.transaction.tree</field>
+        <field name="model">acb.transaction</field>
+        <field name="arch" type="xml">
+            <tree string="Giao dịch ACB" decoration-success="state=='processed'" decoration-danger="state=='error'" decoration-muted="state=='cancelled'">
+                <field name="transaction_date"/>
+                <field name="transaction_code"/>
+                <field name="account_number"/>
+                <field name="debit_or_credit"/>
+                <field name="amount_in_currency"/>
+                <field name="transaction_content"/>
+                <field name="partner_id"/>
+                <field name="source_type"/>
+                <field name="transaction_status"/>
+                <field name="state"/>
+                <field name="currency_id" invisible="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Form view for ACB transactions -->
+    <record id="acb_transaction_form_view" model="ir.ui.view">
+        <field name="name">acb.transaction.form</field>
+        <field name="model">acb.transaction</field>
+        <field name="arch" type="xml">
+            <form string="Giao dịch ACB">
+                <header>
+                    <button name="action_process" string="Xử lý" type="object" class="btn-primary" states="draft"/>
+                    <button name="action_view_api_call_log" string="Xem API Log" type="object" class="btn-info"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,processed,error"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="transaction_code" readonly="1"/>
+                        </h1>
+                        <div class="o_row">
+                            <field name="source_type" widget="badge" 
+                                   decoration-info="source_type == 'webhook'"
+                                   decoration-success="source_type == 'api_call'"
+                                   decoration-warning="source_type == 'manual'"/>
+                        </div>
+                    </div>
+                    <group>
+                        <group string="Thông tin giao dịch">
+                            <field name="transaction_date"/>
+                            <field name="effective_date"/>
+                            <field name="account_number"/>
+                            <field name="transaction_status"/>
+                            <field name="transaction_channel"/>
+                            <field name="debit_or_credit"/>
+                            <field name="amount"/>
+                            <field name="currency_id"/>
+                            <field name="amount_in_currency"/>
+                        </group>
+                        <group string="Thông tin khách hàng">
+                            <field name="client_id"/>
+                            <field name="client_request_id"/>
+                            <field name="partner_id"/>
+                            <field name="partner_customer_code"/>
+                            <field name="partner_customer_name"/>
+                            <field name="partner_customer_type"/>
+                            <field name="reference_number"/>
+                        </group>
+                    </group>
+                    <group string="Nội dung giao dịch">
+                        <field name="transaction_content" nolabel="1"/>
+                    </group>
+                    <notebook>
+                        <page string="Tài khoản ảo">
+                            <group>
+                                <field name="virtual_account_id"/>
+                                <field name="virtual_account_prefix"/>
+                                <field name="virtual_account_number"/>
+                                <field name="virtual_account"/>
+                            </group>
+                        </page>
+                        <page string="Thông tin ngân hàng">
+                            <group>
+                                <field name="issue_bank_name"/>
+                                <field name="checksum"/>
+                            </group>
+                        </page>
+                        <page string="API &amp; Logging">
+                            <group>
+                                <group string="Nguồn dữ liệu">
+                                    <field name="source_type"/>
+                                    <field name="api_call_time" states="api_call"/>
+                                </group>
+                                <group string="Phân trang">
+                                    <field name="page"/>
+                                    <field name="page_size"/>
+                                    <field name="total_page"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Thông tin mở rộng">
+                            <group>
+                                <group>
+                                    <field name="custom1"/>
+                                    <field name="custom2"/>
+                                    <field name="custom3"/>
+                                    <field name="custom4"/>
+                                    <field name="custom5"/>
+                                </group>
+                                <group>
+                                    <field name="custom6"/>
+                                    <field name="custom7"/>
+                                    <field name="custom8"/>
+                                    <field name="custom9"/>
+                                    <field name="custom10"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Liên kết">
+                            <group>
+                                <field name="invoice_id"/>
+                                <field name="payment_id"/>
+                                <field name="company_id"/>
+                            </group>
+                        </page>
+                        <page string="Phản hồi">
+                            <group>
+                                <field name="response_timestamp"/>
+                                <field name="response_code"/>
+                                <field name="response_message"/>
+                            </group>
+                        </page>
+                        <page string="Dữ liệu thô">
+                            <field name="raw_data" nolabel="1" widget="text" class="acb_raw_data"/>
+                        </page>
+                        <page string="Lỗi" states="error">
+                            <field name="error_message" nolabel="1"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Search view for ACB transactions -->
+    <record id="acb_transaction_search_view" model="ir.ui.view">
+        <field name="name">acb.transaction.search</field>
+        <field name="model">acb.transaction</field>
+        <field name="arch" type="xml">
+            <search string="Tìm kiếm giao dịch ACB">
+                <field name="transaction_code"/>
+                <field name="account_number"/>
+                <field name="transaction_content"/>
+                <field name="partner_id"/>
+                <field name="reference_number"/>
+                <field name="client_id"/>
+                <separator/>
+                <filter string="Hôm nay" name="today" domain="[('transaction_date', '>=', datetime.datetime.now().strftime('%Y-%m-%d 00:00:00')), ('transaction_date', '&lt;=', datetime.datetime.now().strftime('%Y-%m-%d 23:59:59'))]"/>
+                <filter string="Tuần này" name="this_week" domain="[('transaction_date', '>=', (datetime.datetime.now() - datetime.timedelta(days=7)).strftime('%Y-%m-%d 00:00:00'))]"/>
+                <filter string="Tháng này" name="this_month" domain="[('transaction_date', '>=', datetime.datetime.now().strftime('%Y-%m-01 00:00:00'))]"/>
+                <separator/>
+                <filter string="Ghi có" name="credit" domain="[('debit_or_credit', '=', 'credit')]"/>
+                <filter string="Ghi nợ" name="debit" domain="[('debit_or_credit', '=', 'debit')]"/>
+                <separator/>
+                <filter string="Nháp" name="draft" domain="[('state', '=', 'draft')]"/>
+                <filter string="Đã xử lý" name="processed" domain="[('state', '=', 'processed')]"/>
+                <filter string="Lỗi" name="error" domain="[('state', '=', 'error')]"/>
+                <separator/>
+                <filter string="Từ Webhook" name="webhook_source" domain="[('source_type', '=', 'webhook')]"/>
+                <filter string="Từ API Call" name="api_source" domain="[('source_type', '=', 'api_call')]"/>
+                <filter string="Manual" name="manual_source" domain="[('source_type', '=', 'manual')]"/>
+                <separator/>
+                <filter string="Thành công" name="completed" domain="[('transaction_status', '=', 'COMPLETED')]"/>
+                <filter string="Đã hủy" name="cancelled" domain="[('transaction_status', '=', 'ERRORCORRECTED')]"/>
+                <group expand="0" string="Nhóm theo">
+                    <filter string="Trạng thái" name="group_by_state" domain="[]" context="{'group_by': 'state'}"/>
+                    <filter string="Nguồn dữ liệu" name="group_by_source" domain="[]" context="{'group_by': 'source_type'}"/>
+                    <filter string="Loại giao dịch" name="group_by_type" domain="[]" context="{'group_by': 'debit_or_credit'}"/>
+                    <filter string="Kênh giao dịch" name="group_by_channel" domain="[]" context="{'group_by': 'transaction_channel'}"/>
+                    <filter string="Khách hàng" name="group_by_partner" domain="[]" context="{'group_by': 'partner_id'}"/>
+                    <filter string="Ngày giao dịch" name="group_by_date" domain="[]" context="{'group_by': 'transaction_date:day'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Kanban view for ACB transactions -->
+    <record id="acb_transaction_kanban_view" model="ir.ui.view">
+        <field name="name">acb.transaction.kanban</field>
+        <field name="model">acb.transaction</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_mobile">
+                <field name="transaction_code"/>
+                <field name="transaction_date"/>
+                <field name="amount_in_currency"/>
+                <field name="currency_id"/>
+                <field name="debit_or_credit"/>
+                <field name="state"/>
+                <field name="source_type"/>
+                <field name="partner_id"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_card oe_kanban_global_click">
+                            <div class="o_kanban_record_top">
+                                <div class="o_kanban_record_headings">
+                                    <strong class="o_kanban_record_title">
+                                        <field name="transaction_code"/>
+                                    </strong>
+                                </div>
+                                <div>
+                                    <span class="badge" t-attf-class="badge-#{record.state.raw_value == 'processed' ? 'success' : (record.state.raw_value == 'error' ? 'danger' : 'secondary')}">
+                                        <field name="state"/>
+                                    </span>
+                                    <span class="badge" t-attf-class="badge-#{record.source_type.raw_value == 'webhook' ? 'info' : (record.source_type.raw_value == 'api_call' ? 'success' : 'warning')}">
+                                        <field name="source_type"/>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="o_kanban_record_body">
+                                <div class="o_kanban_record_title">
+                                    <span t-attf-class="text-#{record.debit_or_credit.raw_value == 'credit' ? 'success' : 'danger'}">
+                                        <t t-if="record.debit_or_credit.raw_value == 'credit'">+</t>
+                                        <t t-if="record.debit_or_credit.raw_value == 'debit'">-</t>
+                                        <field name="amount_in_currency"/>
+                                    </span>
+                                </div>
+                                <div class="text-muted">
+                                    <field name="transaction_date"/>
+                                </div>
+                                <div t-if="record.partner_id.raw_value">
+                                    <field name="partner_id"/>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- Action for ACB transactions -->
+    <record id="acb_transaction_action" model="ir.actions.act_window">
+        <field name="name">Giao dịch ACB</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">acb.transaction</field>
+        <field name="view_mode">tree,form,kanban</field>
+        <field name="search_view_id" ref="acb_transaction_search_view"/>
+        <field name="context">{'search_default_this_month': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Tạo giao dịch ACB đầu tiên
+            </p>
+            <p>
+                Giao dịch ACB sẽ được tự động tạo khi nhận webhook từ ngân hàng ACB hoặc gọi API.<br/>
+                Bạn có thể xem và quản lý các giao dịch tại đây.<br/><br/>
+                <strong>Nguồn dữ liệu:</strong><br/>
+                - <span class="badge badge-info">Webhook</span>: Nhận tự động từ ACB<br/>
+                - <span class="badge badge-success">API Call</span>: Lấy thủ công qua API<br/>
+                - <span class="badge badge-warning">Manual</span>: Tạo thủ công
+            </p>
+        </field>
+    </record>
+
+    <!-- Graph view for ACB transactions -->
+    <record id="acb_transaction_graph_view" model="ir.ui.view">
+        <field name="name">acb.transaction.graph</field>
+        <field name="model">acb.transaction</field>
+        <field name="arch" type="xml">
+            <graph string="Biểu đồ giao dịch ACB">
+                <field name="transaction_date" type="row" interval="day"/>
+                <field name="amount_in_currency" type="measure"/>
+                <field name="source_type" type="col"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- Pivot view for ACB transactions -->
+    <record id="acb_transaction_pivot_view" model="ir.ui.view">
+        <field name="name">acb.transaction.pivot</field>
+        <field name="model">acb.transaction</field>
+        <field name="arch" type="xml">
+            <pivot string="Phân tích giao dịch ACB">
+                <field name="transaction_date" type="row" interval="day"/>
+                <field name="source_type" type="col"/>
+                <field name="amount_in_currency" type="measure"/>
+                <field name="id" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <!-- Server action to open fetch wizard from transaction list -->
+    <record id="acb_fetch_wizard_server_action" model="ir.actions.server">
+        <field name="name">Lấy giao dịch ACB</field>
+        <field name="model_id" ref="model_acb_transaction"/>
+        <field name="state">code</field>
+        <field name="code">
+action = {
+    'type': 'ir.actions.act_window',
+    'name': 'Lấy giao dịch ACB',
+    'res_model': 'acb.fetch.wizard',
+    'view_mode': 'form',
+    'target': 'new',
+    'view_id': env.ref('nsg_acb_integration.acb_fetch_wizard_form_view').id,
+}
+        </field>
+    </record>
+
+
+
+</odoo> 

@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+
+    <!-- Template cho Stock Picking -->
+    <template id="delivery_receipt_report_template_picking">
+        <t t-call="web.html_container">
+            <style>
+                /* Đảm bảo encoding UTF-8 và font hỗ trợ tiếng Việt */
+                .page {
+                    font-family: 'DejaVu Sans', 'Arial', 'Helvetica', sans-serif !important;
+                }
+                .page h2 {
+                    font-family: 'DejaVu Sans', 'Arial', 'Helvetica', sans-serif !important;
+                    text-transform: uppercase;
+                    white-space: nowrap;
+                }
+                /* Ẩn toàn bộ footer của hệ thống */
+                .footer,
+                .page-footer,
+                .o_report_layout .footer,
+                .o_report_layout .page-footer,
+                div.footer {
+                    display: none !important;
+                    height: 0 !important;
+                    padding: 0 !important;
+                    margin: 0 !important;
+                    visibility: hidden !important;
+                }
+            </style>
+            <t t-foreach="docs" t-as="picking">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <!-- Header -->
+                        <!-- <div class="row" style="margin-bottom: 20px;">
+                            <div class="col-12">
+                                <div style="text-align: center;">
+                                    <h4 style="margin: 0;">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</h4>
+                                    <h5 style="margin: 5px 0;">Độc Lập - Tự Do - Hạnh Phúc</h5>
+                                    <div style="margin: 10px 0;">******</div>
+                                </div>
+                            </div>
+                        </div> -->
+
+                        <!-- Title -->
+                        <div class="row" id="hash_header">
+                            <div class="col-12" style="text-align: center;">
+                                <h2>
+                                    BIÊN BẢN GIAO NHẬN HÀNG HÓA
+                                </h2>
+                            </div>
+                        </div>
+                        <!-- Document Info - Lấy từ Sale Order nếu có -->
+                        <t t-set="sale_order" t-value="(picking.sale_id) or (picking.origin and picking.env['sale.order'].search([('name', '=', picking.origin)], limit=1))"/>
+                        <div style="margin-bottom: 10px;">
+                            <t t-if="picking.delivery_receipt_construction_site">
+                                <div t-raw="picking.delivery_receipt_construction_site"/>
+                            </t>
+                            <t t-else="">
+                                <div t-raw="picking.company_id.delivery_receipt_construction_site"/>
+                            </t>
+                        </div>
+
+                        <!-- Location Info -->
+                        <div style="margin-bottom: 10px;">
+                            <p style="margin: 5px 0;">Chúng tôi gồm có:</p>
+                        </div>
+
+                        <!-- Parties Section -->
+                        <div style="margin-bottom: 10px; display: flex; flex-direction: row; justify-content: space-between; align-items: flex-start;">
+                            <div style="flex: 1; margin-right: 15px;">
+                                <h5 style="text-decoration: underline;">
+                                BÊN GIAO: 
+                                <p style="margin: 5px 0;">Tên công ty: CÔNG TY TNHH XNK THƯƠNG MẠI NAM SÀI GÒN</p>
+                                <p style="margin: 5px 0;" t-if="sale_order and sale_order.user_id">
+                                    Đại Diện do Ông/Bà: <span t-field="sale_order.user_id.name"/>
+                                </p>
+                                <p style="margin: 5px 0;" t-if="sale_order and sale_order.user_id">
+                                    ĐT: <span t-field="sale_order.user_id.phone"/>
+                                </p>
+                                </h5>
+                            </div>
+                            <div style="flex: 1; margin-right: 15px;">
+                                <h5 style="text-decoration: underline;">
+                                BÊN NHẬN:
+                                <p style="margin: 5px 0;">Tên công ty: <span t-field="picking.partner_id.name"/></p>
+                                <p style="margin: 5px 0;">Đại Diện do Ông/Bà: </p>
+                                <p style="margin: 5px 0;">ĐT:</p>
+                                </h5>
+                            </div>
+                            <div style="flex: 1;">
+                                <h5 style="text-decoration: underline;">
+                                BÊN VẬN CHUYỂN: 
+                                </h5>
+                            </div>
+                        </div>
+
+                        <!-- Introduction -->
+                        <div style="margin-bottom: 10px;">
+                            <p style="margin: 5px 0;">Cùng nhau kiểm tra, thống nhất lập biên bản giao nhận hàng hóa như sau:</p>
+                        </div>
+
+                        <!-- Items Table -->
+                        <table style="width: 100%; margin: 0 auto 20px auto; border-collapse: collapse; border: 1px solid #000;">
+                            <thead>
+                                <tr>
+                                    <th style="width: 3%; text-align: center; padding: 8px; border: 1px solid #000; background-color: #f0f0f0;">STT</th>
+                                    <th colspan="2" style="width: 22%; text-align: left; padding: 8px; border: 1px solid #000; background-color: #f0f0f0;">Tên sản phẩm</th>
+                                    <th style="width: 10%; text-align: center; padding: 8px; border: 1px solid #000; background-color: #f0f0f0;">Mã NSX</th>
+                                    <th style="width: 10%; text-align: center; padding: 8px; border: 1px solid #000; background-color: #f0f0f0;">Quy cách</th>
+                                    <th style="width: 10%; text-align: center; padding: 8px; border: 1px solid #000; background-color: #f0f0f0;">L (m)</th>
+                                    <th style="width: 10%; text-align: right; padding: 8px; border: 1px solid #000; background-color: #f0f0f0;">SL</th>
+                                    <th style="width: 10%; text-align: right; padding: 8px; border: 1px solid #000; background-color: #f0f0f0;">KL XHĐ (KG)</th>
+                                    <th style="width: 10%; text-align: center; padding: 8px; border: 1px solid #000; background-color: #f0f0f0;">Ghi chú</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Lấy dữ liệu từ tab "Operations" - field: move_ids_without_package -->
+                                <t t-set="all_moves" t-value="picking.move_ids_without_package"/>
+                                <t t-set="sorted_moves" t-value="sorted(all_moves, key=lambda m: (m.sale_line_id.sequence if m.sale_line_id and m.sale_line_id.sequence else 0, m.id))"/>
+                                <t t-set="line_counter" t-value="0"/>
+                                <t t-foreach="sorted_moves" t-as="move" t-key="move.id">
+                                    <t t-set="sale_line" t-value="move.sale_line_id if move.sale_line_id else False"/>
+                                    <t t-set="line_counter" t-value="line_counter + 1"/>
+                                    <tr>
+                                        <!-- STT -->
+                                        <td style="text-align: center; padding: 8px; border: 1px solid #000;" t-esc="line_counter"/>
+                                        <!-- Tên sản phẩm -->
+                                        <td colspan="2" style="width: 22%; text-align: left; padding: 8px; border: 1px solid #000;">
+                                            <span t-field="move.product_id.name" t-options="{'no_marker': True}"/>
+                                        </td>
+                                        <!-- Mã NSX -->
+                                        <td style="text-align: center; padding: 8px; border: 1px solid #000;">
+                                            <span t-field="sale_line.supplier_product_code"/>
+                                        </td>
+                                        <!-- Quy cách -->
+                                        <td style="text-align: center; padding: 8px; border: 1px solid #000;">
+                                            <t t-if="sale_line and sale_line.supplier_delivery_type_id">
+                                                <span t-field="sale_line.supplier_delivery_type_id.name"/>
+                                            </t>
+                                        </td>
+                                        <!-- L (m) -->
+                                        <td style="text-align: center; padding: 8px; border: 1px solid #000;">
+                                            <t t-if="sale_line">
+                                                <span t-esc="sale_line.length or ''"/>
+                                            </t>
+                                        </td>
+                                        <!-- SL -->
+                                        <td style="text-align: right; padding: 8px; border: 1px solid #000;">
+                                            <t t-set="qty_sl" t-value="move.quantity_another1 if move.quantity_another1 else (sale_line.quantity_another1 if sale_line and sale_line.quantity_another1 else 0)"/>
+                                            <span t-esc="'{:,.1f}'.format(qty_sl)"/>
+                                        </td>
+                                        <!-- KL XHĐ (KG) -->
+                                        <td style="text-align: right; padding: 8px; border: 1px solid #000;">
+                                            <span t-esc="'{:,.1f}'.format(move.product_uom_qty)"/>
+                                        </td>
+                                        <!-- GHI CHÚ -->
+                                        <td style="text-align: center; padding: 8px; border: 1px solid #000;"> </td>
+                                    </tr>
+                                </t>
+                                <tr style="background-color: #f9f9f9;">
+                                    <td style="text-align: center; padding: 8px; border: 1px solid #000; font-size: 14px;">CỘNG</td>
+                                    <td colspan="2" style="padding: 8px; border: 1px solid #000;"> </td>
+                                    <td style="padding: 8px; border: 1px solid #000;"> </td>
+                                    <td style="padding: 8px; border: 1px solid #000;"> </td>
+                                    <td style="text-align: center; padding: 8px; border: 1px solid #000;"> </td>
+                                    <td style="text-align: right; padding: 8px; border: 1px solid #000; font-size: 14px;">
+                                        <t t-set="total_qty_another1" t-value="0"/>
+                                        <t t-foreach="sorted_moves" t-as="m">
+                                            <t t-set="m_sale_line" t-value="m.sale_line_id if m.sale_line_id else False"/>
+                                            <t t-set="m_qty" t-value="m.quantity_another1 if m.quantity_another1 else (m_sale_line.quantity_another1 if m_sale_line and m_sale_line.quantity_another1 else 0)"/>
+                                            <t t-set="total_qty_another1" t-value="total_qty_another1 + m_qty"/>
+                                        </t>
+                                        <strong><span t-esc="'{:,.1f}'.format(total_qty_another1)"/></strong>
+                                    </td>
+                                    <td style="text-align: right; padding: 8px; border: 1px solid #000;">
+                                        <t t-set="total_qty_done" t-value="0"/>
+                                        <t t-foreach="sorted_moves" t-as="m">
+                                            <t t-set="total_qty_done" t-value="total_qty_done + m.product_uom_qty"/>
+                                        </t>
+                                        <strong><span t-esc="'{:,.1f}'.format(total_qty_done)"/></strong>
+                                    </td>
+                                    <td style="text-align: center; padding: 8px; border: 1px solid #000;"> </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <!-- Footer Notes -->
+                        <div style="margin-bottom: 20px;">
+                            <t t-if="picking.company_id.delivery_receipt_footer_notes">
+                                <div t-raw="picking.company_id.delivery_receipt_footer_notes"/>
+                            </t>
+                        </div>
+
+                         <!-- Signature Section -->
+                        <div class="row" style="margin-top: 20px;">
+                            <div class="col-6" style="text-align: center;">
+                                <h5 style="text-decoration: underline;">
+                                    ĐẠI DIỆN BÊN GIAO:
+                                    <br/>
+                                    <br/>
+                                    <br/>
+                                    <br/>
+                                    <br/>
+                                    <t t-if="sale_order and sale_order.user_id"><span t-field="sale_order.user_id.name"/></t>
+                                </h5>
+                            </div>
+                            <div class="col-6" style="text-align: center;">
+                                <h5 style="text-decoration: underline;">
+                                    ĐẠI DIỆN BÊN NHẬN:
+                                    <br/>
+                                    <br/>
+                                    <br/>
+                                    <br/>
+                                    <br/>
+                                </h5>
+                            </div>
+                        </div>
+
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <!-- Report cho Stock Picking -->
+    <record id="action_delivery_receipt_report_picking" model="ir.actions.report">
+        <field name="name">Biên bản giao nhận hàng hóa</field>
+        <field name="model">stock.picking</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">ngs_sale.delivery_receipt_report_template_picking</field>
+        <field name="report_file">ngs_sale.delivery_receipt_report_picking</field>
+        <field name="binding_model_id" ref="stock.model_stock_picking"/>
+        <field name="binding_type">report</field>
+    </record>
+
+</odoo>

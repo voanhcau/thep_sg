@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Tree view for ACB config -->
+    <record id="acb_config_tree_view" model="ir.ui.view">
+        <field name="name">acb.config.tree</field>
+        <field name="model">acb.config</field>
+        <field name="arch" type="xml">
+            <tree string="Cấu hình ACB" decoration-success="active==True" decoration-muted="active==False">
+                <field name="name"/>
+                <field name="client_id"/>
+                <field name="virtual_account_id"/>
+                <field name="api_call_count"/>
+                <field name="last_api_call"/>
+                <field name="total_transactions"/>
+                <field name="last_transaction_date"/>
+                <field name="active"/>
+                <field name="company_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Form view for ACB config -->
+    <record id="acb_config_form_view" model="ir.ui.view">
+        <field name="name">acb.config.form</field>
+        <field name="model">acb.config</field>
+        <field name="arch" type="xml">
+            <form string="Cấu hình ACB">
+                <header>
+                    <button name="test_api_connection" string="Test API" type="object" class="btn-primary"/>
+                    <button name="action_fetch_transactions" string="Lấy giao dịch" type="object" class="btn-secondary"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="Tên cấu hình ACB"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="Thông tin kết nối">
+                            <field name="api_base_url"/>
+                            <field name="api_notification_url"/>
+                            <field name="client_id"/>
+                            <field name="secret_key" password="True"/>
+                            <field name="active"/>
+                            <field name="company_id"/>
+                        </group>
+                        <group string="Tài khoản ảo">
+                            <field name="virtual_account_id"/>
+                            <field name="virtual_account_prefix"/>
+                        </group>
+                    </group>
+                    
+                    <group string="Webhook">
+                        <field name="webhook_url" placeholder="Sẽ được tự động tạo"/>
+                    </group>
+                    
+                    <notebook>
+                        <page string="API Testing">
+                            <group>
+                                <group string="Thống kê API">
+                                    <field name="api_call_count"/>
+                                    <field name="last_api_call"/>
+                                </group>
+                                <group string="Cấu hình">
+                                    <field name="enable_logging"/>
+                                </group>
+                            </group>
+                            <group string="Response API cuối">
+                                <field name="last_api_response" nolabel="1" widget="text"/>
+                            </group>
+                        </page>
+                        
+                        <page string="Thống kê giao dịch">
+                            <group>
+                                <group string="Giao dịch">
+                                    <field name="total_transactions"/>
+                                    <field name="last_transaction_date"/>
+                                </group>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <!-- Search view for ACB config -->
+    <record id="acb_config_search_view" model="ir.ui.view">
+        <field name="name">acb.config.search</field>
+        <field name="model">acb.config</field>
+        <field name="arch" type="xml">
+            <search string="Tìm kiếm cấu hình ACB">
+                <field name="name"/>
+                <field name="client_id"/>
+                <field name="virtual_account_id"/>
+                <field name="company_id"/>
+                <separator/>
+                <filter string="Kích hoạt" name="active" domain="[('active', '=', True)]"/>
+                <filter string="Không kích hoạt" name="inactive" domain="[('active', '=', False)]"/>
+                <separator/>
+                <filter string="Có logging" name="logging_enabled" domain="[('enable_logging', '=', True)]"/>
+                <filter string="Đã test API" name="api_tested" domain="[('api_call_count', '>', 0)]"/>
+                <group expand="0" string="Nhóm theo">
+                    <filter string="Trạng thái" name="group_by_active" domain="[]" context="{'group_by': 'active'}"/>
+                    <filter string="Công ty" name="group_by_company" domain="[]" context="{'group_by': 'company_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Kanban view for ACB config -->
+    <record id="acb_config_kanban_view" model="ir.ui.view">
+        <field name="name">acb.config.kanban</field>
+        <field name="model">acb.config</field>
+        <field name="arch" type="xml">
+            <kanban>
+                <field name="name"/>
+                <field name="client_id"/>
+                <field name="active"/>
+                <field name="api_call_count"/>
+                <field name="last_api_call"/>
+                <field name="total_transactions"/>
+                <field name="last_transaction_date"/>
+                <field name="company_id"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_card oe_kanban_global_click">
+                            <div class="o_kanban_record_top">
+                                <div class="o_kanban_record_headings">
+                                    <strong class="o_kanban_record_title">
+                                        <field name="name"/>
+                                    </strong>
+                                </div>
+                                <span class="badge" t-attf-class="badge-#{record.active.raw_value ? 'success' : 'secondary'}">
+                                    <t t-if="record.active.raw_value">Kích hoạt</t>
+                                    <t t-if="!record.active.raw_value">Không kích hoạt</t>
+                                </span>
+                            </div>
+                            <div class="o_kanban_record_body">
+                                <div class="o_kanban_record_title">
+                                    Client ID: <field name="client_id"/>
+                                </div>
+                                <div class="text-muted">
+                                    <field name="company_id"/>
+                                </div>
+                                <div class="o_kanban_record_bottom">
+                                    <div class="oe_kanban_bottom_left">
+                                        <div><strong><field name="total_transactions"/> giao dịch</strong></div>
+                                        <div><field name="api_call_count"/> API calls</div>
+                                    </div>
+                                    <div class="oe_kanban_bottom_right">
+                                        <div><field name="last_transaction_date"/></div>
+                                        <div><field name="last_api_call"/></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <!-- Action for ACB config -->
+    <record id="acb_config_action" model="ir.actions.act_window">
+        <field name="name">Cấu hình ACB</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">acb.config</field>
+        <field name="view_mode">tree,form,kanban</field>
+        <field name="search_view_id" ref="acb_config_search_view"/>
+        <field name="context">{'search_default_active': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Tạo cấu hình ACB đầu tiên
+            </p>
+            <p>
+                Cấu hình kết nối với ngân hàng ACB để nhận thông báo giao dịch tự động.<br/>
+                <strong>Client ID:</strong> 30735a42d5313ce3a29284d3cbfd1d8f<br/>
+                <strong>API URL:</strong> https://sandbox.acb.com.vn/acb/open/transactions/notification-api-adapter/v1/rtxn-notification
+            </p>
+        </field>
+    </record>
+
+</odoo> 

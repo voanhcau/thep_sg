@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <record id="ngs_sale_view_move_form" model="ir.ui.view">
+        <field name="name">account.move.ngs_sale.form</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@id='header_left_group']/field[@name='partner_id']" position="after">
+                <label for="no_output_invoice" string="Không xuất hoá đơn" style="font-weight:bold;"/>
+                <field name="no_output_invoice" nolabel="1" />
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_account_journal_form" model="ir.ui.view">
+        <field name="name">account.journal.ngs_sale.form</field>
+        <field name="model">account.journal</field>
+        <field name="inherit_id" ref="account.view_account_journal_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='type']" position="after">
+                <button type="object" name="update_account_move_line" string="Update Account Journal Entries"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

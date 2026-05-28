@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <record id="sale_commission_user_form_view" model="ir.ui.view">
+        <field name="name">sale.commission.user.form</field>
+        <field name="model">sale.commission.user</field>
+        <field name="priority">1</field>
+        <field name="arch" type="xml">
+            <form string="Hoa Hồng Nhân Viên">
+                <header>
+                    <group>
+                        <group>
+                            <field name="user_id" invisible="1"/>
+                            <field name="seller_id"/>
+                        </group>
+                        <group>
+                            <field name="total_quantity"/>
+                            <field name="seller_commission"/>
+                        </group>
+                    </group>
+                </header>
+                <sheet>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="sale_commission_user_list_view" model="ir.ui.view">
+        <field name="name">sale.commission.user.list</field>
+        <field name="model">sale.commission.user</field>
+        <field name="priority">1</field>
+        <field name="arch" type="xml">
+            <tree string="Hoa Hồng Nhân Viên">
+                <field name="user_id" invisible="1"/>
+                <field name="seller_id"/>
+                <field name="total_quantity"/>
+                <field name="seller_commission"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="sale_commission_user_search_view" model="ir.ui.view">
+        <field name="name">sale.commission.user.search</field>
+        <field name="model">sale.commission.user</field>
+        <field name="arch" type="xml">
+            <search string="Hoa Hồng Nhân Viên">
+                <field name="seller_id"/>
+                <field name="total_quantity"/>
+                <field name="seller_commission"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="sale_commission_user_action_form" model="ir.actions.act_window">
+        <field name="name">Hoa Hồng Nhân Viên</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">sale.commission.user</field>
+        <field name="search_view_id" ref="sale_commission_user_search_view"/>
+        <field name="view_id" ref="sale_commission_user_list_view"/>
+    </record>
+
+    <menuitem id="menu_sale_commission_user_action_form"
+          action="sale_commission_user_action_form"
+          groups="sales_team.group_sale_manager"
+          parent="sale.sale_order_menu"
+          sequence="80"
+    />
+
+</odoo>

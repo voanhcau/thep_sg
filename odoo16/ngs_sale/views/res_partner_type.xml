@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <record id="res_partner_type_form_view" model="ir.ui.view">
+        <field name="name">res.partner.type.form</field>
+        <field name="model">res.partner.type</field>
+        <field name="arch" type="xml">
+            <form class="oe_form_configuration">
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name" string="Tên của loại khách hàng (cũ, mới ...vv)"/>
+                        <h1>
+                            <field name="name" placeholder="e.g. Cũ"/>
+                        </h1>
+                    </div>
+                    <group name="first" col="2">
+                        <field name="commission_type" class="oe_inline"/>
+                        <field name="commission" class="oe_inline"/>
+                        <field name="commission_type_order" attrs="{'invisible': [('commission_type', '=', 'value')]}"/>
+                        <field name="is_default" class="oe_inline"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="res_partner_type_list_view" model="ir.ui.view">
+        <field name="name">res.partner.type.list</field>
+        <field name="model">res.partner.type</field>
+        <field name="priority">1</field>
+        <field name="arch" type="xml">
+            <tree string="Loại khách hàng">
+                <field name="name"/>
+                <field name="commission_type" class="oe_inline"/>
+                <field name="commission"/>
+                <field name="is_default"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="res_partner_type_search_view" model="ir.ui.view">
+        <field name="name">res.partner.type.search</field>
+        <field name="model">res.partner.type</field>
+        <field name="arch" type="xml">
+            <search string="Loại khách hàng">
+                <field name="name"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="res_partner_type_action_form" model="ir.actions.act_window">
+        <field name="name">Loại khách hàng</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">res.partner.type</field>
+        <field name="search_view_id" ref="res_partner_type_search_view"/>
+        <field name="view_id" ref="res_partner_type_list_view"/>
+    </record>
+
+    <menuitem id="menu_res_partner_type_action_form"
+          action="res_partner_type_action_form"
+          groups="sales_team.group_sale_manager"
+          parent="sale.product_menu_catalog"
+          sequence="80"
+    />
+
+</odoo>

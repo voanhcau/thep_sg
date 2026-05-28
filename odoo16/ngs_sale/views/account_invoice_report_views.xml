@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Form View -->
+    <record id="view_account_invoice_report_form" model="ir.ui.view">
+        <field name="name">account.invoice.report.form</field>
+        <field name="model">account.invoice.report</field>
+        <field name="arch" type="xml">
+            <form string="Invoice Analysis" create="false" edit="false">
+                <sheet>
+                    <group>
+                        <group string="Thông tin chung">
+                            <field name="name"/>
+                            <field name="partner_id"/>
+                            <field name="invoice_date"/>
+                            <field name="state"/>
+                            <field name="move_type"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="invoice_month"/>
+                        </group>
+                        <group string="Thông tin đơn hàng">
+                            <field name="purchase_id"/>
+                            <field name="sale_id"/>
+                            <field name="purchase_month"/>
+                            <field name="is_different_month"/>
+                            <field name="tags_text"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Thông tin sản phẩm">
+                            <field name="product_id"/>
+                            <field name="product_categ_id"/>
+                            <field name="quantity"/>
+                            <field name="price_unit"/>
+                        </group>
+                        <group string="Thông tin tài chính">
+                            <field name="price_total"/>
+                            <field name="price_average"/>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="amount_total" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Tree/List View -->
+    <record id="view_account_invoice_report_tree" model="ir.ui.view">
+        <field name="name">account.invoice.report.tree</field>
+        <field name="model">account.invoice.report</field>
+        <field name="arch" type="xml">
+            <tree string="Invoice Analysis" create="false">
+                <field name="invoice_date"/>
+                <field name="partner_id"/>
+                <field name="product_id"/>
+                <field name="quantity"/>
+                <field name="price_total" sum="Total"/>
+                <field name="purchase_id"/>
+                <field name="sale_id"/>
+                <field name="invoice_month"/>
+                <field name="purchase_month"/>
+                <field name="is_different_month"/>
+                <field name="tags_text"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_account_invoice_report_search" model="ir.ui.view">
+        <field name="name">account.invoice.report.search</field>
+        <field name="model">account.invoice.report</field>
+        <field name="arch" type="xml">
+            <search string="Invoice Analysis">
+                <field name="partner_id"/>
+                <field name="product_id"/>
+                <field name="purchase_id"/>
+                <field name="sale_id"/>
+                <field name="tags_text"/>
+                <filter string="Hóa đơn tồn kho" name="different_month" domain="[('is_different_month', '=', True)]"/>
+                <group expand="1" string="Group By">
+                    <filter string="Đối tác" name="partner_id" context="{'group_by':'partner_id'}"/>
+                    <filter string="Sản phẩm" name="product_id" context="{'group_by':'product_id'}"/>
+                    <filter string="Tháng hóa đơn" name="invoice_month" context="{'group_by':'invoice_month'}"/>
+                    <filter string="Tháng đơn mua" name="purchase_month" context="{'group_by':'purchase_month'}"/>
+                    <filter string="Đơn mua hàng" name="purchase_id" context="{'group_by':'purchase_id'}"/>
+                    <filter string="Đơn bán hàng" name="sale_id" context="{'group_by':'sale_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_account_invoice_report" model="ir.actions.act_window">
+        <field name="name">Phân tích hóa đơn</field>
+        <field name="res_model">account.invoice.report</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="view_account_invoice_report_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Không có dữ liệu phân tích hóa đơn
+            </p>
+        </field>
+    </record>
+
+    <!-- Menu Item -->
+    <menuitem id="menu_action_account_invoice_report"
+        name="Phân tích hóa đơn"
+        action="action_account_invoice_report"
+        parent="account.menu_finance_reports"
+        sequence="5"/>
+</odoo> 

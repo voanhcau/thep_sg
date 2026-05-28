@@ -1,0 +1,103 @@
+<odoo>
+    <!-- Form View: Sale Order -->
+    <record id="view_order_form_processing_state" model="ir.ui.view">
+        <field name="name">sale.order.form.processing.state</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="ngs_sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='tag_ids']" position="before">
+                <field name="processing_state_id" widget="selection"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_order_tree_processing_state" model="ir.ui.view">
+        <field name="name">sale.order.tree.processing.state</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//tree" position="inside">
+                <field name="processing_state_id" optional="hide"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_quotation_tree_with_onboarding" model="ir.ui.view">
+        <field name="name">sale.order.tree.processing.state</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_quotation_tree_with_onboarding"/>
+        <field name="arch" type="xml">
+            <xpath expr="//tree" position="inside">
+                <field name="processing_state_id" optional="hide"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_order_search_processing_state" model="ir.ui.view">
+        <field name="name">sale.order.search.processing.state</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.sale_order_view_search_inherit_quotation"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='my_quotation']" position="after">
+                <field name="processing_state_id"/>
+                <filter string="Trạng thái xử lý" name="processing_state_filter"
+                        domain="[('processing_state_id', '=', self)]"
+                        context="{'group_by': 'processing_state_id'}"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Tree View: Sale Order -->
+    <record id="view_order_tree_processing_state" model="ir.ui.view">
+        <field name="name">sale.order.tree.processing.state</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//tree" position="inside">
+                <field name="processing_state_id"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Tree View: Sale Processing State -->
+    <record id="view_sale_processing_state_tree" model="ir.ui.view">
+        <field name="name">sale.processing.state.tree</field>
+        <field name="model">sale.processing.state</field>
+        <field name="arch" type="xml">
+            <tree string="Sale Processing States">
+                <field name="name"/>
+                <field name="description"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Form View: Sale Processing State -->
+    <record id="view_sale_processing_state_form" model="ir.ui.view">
+        <field name="name">sale.processing.state.form</field>
+        <field name="model">sale.processing.state</field>
+        <field name="arch" type="xml">
+            <form string="Sale Processing State">
+                <group>
+                    <field name="name"/>
+                    <field name="description"/>
+                </group>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action: Sale Processing State -->
+    <record id="action_sale_processing_state_list" model="ir.actions.act_window">
+        <field name="name">Trạng thái xử lý</field>
+        <field name="res_model">sale.processing.state</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <!-- Menu: Sale Processing State -->
+    <menuitem id="menu_sale_processing_state_root" name="Trạng thái xử lý" sequence="10"
+              parent="sale.menu_sale_config"/>
+
+    <menuitem id="menu_sale_processing_state_list" name="Danh sách trạng thái"
+              parent="menu_sale_processing_state_root" action="action_sale_processing_state_list"/>
+
+
+</odoo>
